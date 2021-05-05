@@ -1,8 +1,8 @@
 package ir.nabzi.aroundme.data.repository
 
-import ir.nabzi.places.model.Place
-import ir.nabzi.places.model.Resource
-import ir.nabzi.places.model.Status
+import ir.nabzi.aroundme.model.Place
+import ir.nabzi.aroundme.model.Resource
+import ir.nabzi.aroundme.model.Status
 
 /**
 *   RemoteResource<ResultType> is an abstract class that can be used for resources that can be fetched
