@@ -1,11 +1,9 @@
-package ir.nabzi.aroundme.model
-import okhttp3.Headers
+package ir.nabzi.aroundme.data.model
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.HttpException
 import retrofit2.Response
 import java.net.ConnectException
-import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 

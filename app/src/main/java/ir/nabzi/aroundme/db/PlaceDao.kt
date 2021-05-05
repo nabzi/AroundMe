@@ -1,12 +1,10 @@
 package ir.nabzi.aroundme.data.db
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import ir.nabzi.aroundme.model.Place
-import kotlinx.coroutines.flow.Flow
+import ir.nabzi.aroundme.data.model.Place
 
 @Dao
 abstract class PlaceDao {

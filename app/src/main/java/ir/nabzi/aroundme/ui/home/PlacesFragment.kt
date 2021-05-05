@@ -19,8 +19,8 @@ import com.mapbox.mapboxsdk.style.layers.TransitionOptions
 import ir.nabzi.aroundme.R
 import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.MAP_ACCESS_TOKEN
 import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.showError
-import ir.nabzi.aroundme.model.Place
-import ir.nabzi.aroundme.model.Status
+import ir.nabzi.aroundme.data.model.Place
+import ir.nabzi.aroundme.data.model.Status
 import kotlinx.android.synthetic.main.fragment_places.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch

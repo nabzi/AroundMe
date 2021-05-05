@@ -1,4 +1,4 @@
-package ir.nabzi.aroundme.remote
+package ir.nabzi.aroundme.data.remote
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

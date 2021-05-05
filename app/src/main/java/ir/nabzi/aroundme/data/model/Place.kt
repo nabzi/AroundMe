@@ -1,6 +1,5 @@
-package ir.nabzi.aroundme.model
+package ir.nabzi.aroundme.data.model
 
-import android.os.Bundle
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -1,4 +1,4 @@
-package ir.nabzi.aroundme.model
+package ir.nabzi.aroundme.data.model
 
 
 /**#code from  : gitHubBrowserSample

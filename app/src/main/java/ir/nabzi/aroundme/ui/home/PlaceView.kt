@@ -1,14 +1,11 @@
 package ir.nabzi.aroundme.ui.home
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import ir.nabzi.aroundme.R
 import ir.nabzi.aroundme.databinding.ItemPlaceLayoutBindingImpl
-import ir.nabzi.aroundme.model.Place
+import ir.nabzi.aroundme.data.model.Place
 
 class PlaceView(layoutInflater: LayoutInflater, container: ViewGroup?, val onClick: CALLBACK?) {
     val binding : ItemPlaceLayoutBindingImpl = DataBindingUtil.inflate(
