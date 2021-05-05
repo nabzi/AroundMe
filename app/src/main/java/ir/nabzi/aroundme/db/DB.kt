@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import ir.nabzi.aroundme.Place
+import ir.nabzi.aroundme.data.db.PlaceDao
 import ir.nabzi.aroundme.data.model.Place
 
 /**
