@@ -1,4 +1,4 @@
-package ir.nabzi.aroundme
+package ir.nabzi.aroundme.model
 
 import android.os.Bundle
 import android.os.Parcelable

@@ -1,6 +1,4 @@
-package ir.nabzi.aroundme
-
-import Resource
+package ir.nabzi.aroundme.model
 import okhttp3.Headers
 import org.json.JSONException
 import org.json.JSONObject
