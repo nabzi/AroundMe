@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
@@ -19,8 +18,8 @@ import com.mapbox.mapboxsdk.style.layers.TransitionOptions
 import ir.nabzi.aroundme.R
 import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.MAP_ACCESS_TOKEN
 import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.showError
-import ir.nabzi.aroundme.data.model.Place
-import ir.nabzi.aroundme.data.model.Status
+import ir.nabzi.aroundme.model.Place
+import ir.nabzi.aroundme.model.Status
 import kotlinx.android.synthetic.main.fragment_places.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch

@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import ir.nabzi.aroundme.data.model.Place
+import ir.nabzi.aroundme.model.Place
 
 @Dao
 abstract class PlaceDao {

@@ -1,4 +1,4 @@
-package ir.nabzi.aroundme.data.model
+package ir.nabzi.aroundme.model
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.HttpException

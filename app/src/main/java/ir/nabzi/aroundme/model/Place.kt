@@ -1,4 +1,4 @@
-package ir.nabzi.aroundme.data.model
+package ir.nabzi.aroundme.model
 
 import android.os.Parcelable
 import androidx.room.Entity

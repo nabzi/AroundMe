@@ -2,8 +2,8 @@ package ir.nabzi.aroundme.ui.home
 
 import androidx.lifecycle.*
 import ir.nabzi.aroundme.data.repository.PlaceRepository
-import ir.nabzi.aroundme.data.model.Place
-import ir.nabzi.aroundme.data.model.Resource
+import ir.nabzi.aroundme.model.Place
+import ir.nabzi.aroundme.model.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch

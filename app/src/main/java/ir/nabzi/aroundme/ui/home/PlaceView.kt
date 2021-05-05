@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import ir.nabzi.aroundme.R
 import ir.nabzi.aroundme.databinding.ItemPlaceLayoutBindingImpl
-import ir.nabzi.aroundme.data.model.Place
+import ir.nabzi.aroundme.model.Place
 
 class PlaceView(layoutInflater: LayoutInflater, container: ViewGroup?, val onClick: CALLBACK?) {
     val binding : ItemPlaceLayoutBindingImpl = DataBindingUtil.inflate(

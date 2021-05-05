@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import ir.nabzi.aroundme.data.model.Place
+import ir.nabzi.aroundme.model.Place
 
 typealias CALLBACK = (String)->Unit
 

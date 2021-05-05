@@ -1,6 +1,6 @@
 package ir.nabzi.aroundme.data.remote
 
-import ir.nabzi.aroundme.data.model.Place
+import ir.nabzi.aroundme.model.Place
 import retrofit2.Response
 
 interface ApiService {

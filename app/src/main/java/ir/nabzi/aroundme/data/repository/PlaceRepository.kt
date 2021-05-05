@@ -2,9 +2,9 @@ package ir.nabzi.aroundme.data.repository
 
 import ir.nabzi.aroundme.data.db.PlaceDao
 import ir.nabzi.aroundme.data.remote.ApiService
-import ir.nabzi.aroundme.data.model.NetworkCall
-import ir.nabzi.aroundme.data.model.Place
-import ir.nabzi.aroundme.data.model.Resource
+import ir.nabzi.aroundme.model.NetworkCall
+import ir.nabzi.aroundme.model.Place
+import ir.nabzi.aroundme.model.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import retrofit2.Response
