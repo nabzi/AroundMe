@@ -6,7 +6,7 @@
     <data>
         <variable
             name="placeitem"
-            type="ir.nabzi.places.model.Place" />
+            type="ir.nabzi.aroundme.model.Place" />
     </data>
 
     <LinearLayout
