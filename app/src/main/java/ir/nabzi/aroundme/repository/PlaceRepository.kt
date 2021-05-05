@@ -1,13 +1,13 @@
 package ir.nabzi.aroundme.data.repository
 
 import com.google.gson.Gson
-import ir.nabzi.places.data.db.PlaceDao
-import ir.nabzi.places.data.remote.ApiService
-import ir.nabzi.places.ir.nabzi.places.data.repository.RemoteResource
-import ir.nabzi.places.model.NetworkCall
-import ir.nabzi.places.model.Place
-import ir.nabzi.places.model.Resource
-import ir.nabzi.places.model.Status
+import ir.nabzi.aroundme.data.db.PlaceDao
+import ir.nabzi.aroundme.data.remote.ApiService
+import ir.nabzi.aroundme.ir.nabzi.aroundme.data.repository.RemoteResource
+import ir.nabzi.aroundme.model.NetworkCall
+import ir.nabzi.aroundme.model.Place
+import ir.nabzi.aroundme.model.Resource
+import ir.nabzi.aroundme.model.Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

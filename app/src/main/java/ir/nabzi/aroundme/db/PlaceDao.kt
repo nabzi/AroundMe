@@ -1,11 +1,11 @@
-package ir.nabzi.places.data.db
+package ir.nabzi.aroundme.data.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import ir.nabzi.places.model.Place
+import ir.nabzi.aroundme.model.Place
 import kotlinx.coroutines.flow.Flow
 
 @Dao
