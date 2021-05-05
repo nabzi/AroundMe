@@ -7,9 +7,9 @@
 
         <variable
             name="vmodel"
-            type="ir.nabzi.places.ui.home.PlaceViewModel" />
+            type="ir.nabzi.aroundme.ui.home.PlaceViewModel" />
 
-        <import type="ir.nabzi.places.model.Status" />
+        <import type="ir.nabzi.aroundme.data.model.Status" />
 
         <import type="android.view.View" />
     </data>

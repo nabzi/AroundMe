@@ -106,9 +106,9 @@ class PlacesFragment : Fragment() {
                     places[position]
                 ) { id ->
                      vmodel.selectedPlaceId.postValue(id)
-                    findNavController().navigate(
-                        PlacesFragmentDirections.actionPlacesFragmentToPlaceDetailsFragment()
-                    )
+//                    findNavController().navigate(
+//                        PlacesFragmentDirections.actionPlacesFragmentToPlaceDetailsFragment()
+//                    )
                 }
 
 
