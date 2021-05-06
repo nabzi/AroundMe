@@ -1,4 +1,4 @@
-package ir.nabzi.arpoundme.data.db
+package ir.nabzi.aroundme.data.db
 
 
 import android.content.Context
