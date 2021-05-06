@@ -1,12 +1,20 @@
 package ir.nabzi.aroundme.ui.home
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
@@ -28,12 +36,49 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class PlacesFragment : Fragment() {
     private val vmodel: PlaceViewModel by sharedViewModel()
-
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    val LOCATION_PERMISSION_REQUEST_CODE = 111
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //permission granted
+            }
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                requireActivity(), arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        } else {
+            //permission granted
 
+        }
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                Toast.makeText(requireContext() , "location updated" + location?.latitude + "," + location?.longitude , Toast.LENGTH_SHORT).show()
+                // Got last known location. In some rare situations this can be null.
+            }
         Mapbox.getInstance(requireContext(), MAP_ACCESS_TOKEN)
         return inflater.inflate(R.layout.fragment_places, container, false)
     }
@@ -46,7 +91,7 @@ class PlacesFragment : Fragment() {
                         showPlaces(it)
                 }
                 when(resource?.status){
-                    Status.SUCCESS ->   showProgress(false)
+                    Status.SUCCESS -> showProgress(false)
                     Status.ERROR -> {
                         showProgress(false)
                         showError(resource.message)
@@ -68,7 +113,8 @@ class PlacesFragment : Fragment() {
 
     private fun initMap(places: List<Place>) {
         mapView.getMapAsync(OnMapReadyCallback { mapboxMap ->
-            mapboxMap.setStyle(Style.MAPBOX_STREETS
+            mapboxMap.setStyle(
+                Style.MAPBOX_STREETS
             ) { style ->
                 style.transition = TransitionOptions(0, 0, false);
                 val position = CameraPosition.Builder()
@@ -102,8 +148,8 @@ class PlacesFragment : Fragment() {
         viewPager?.adapter = object : FragmentStateAdapter(this) {
             override fun createFragment(position: Int): Fragment {
                  return PlaceItemFragment.create(
-                    places[position]
-                ) { id ->
+                     places[position]
+                 ) { id ->
                      vmodel.selectedPlaceId.postValue(id)
 //                    findNavController().navigate(
 //                        PlacesFragmentDirections.actionPlacesFragmentToPlaceDetailsFragment()
