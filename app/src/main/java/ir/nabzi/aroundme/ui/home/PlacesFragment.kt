@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +14,7 @@ import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
@@ -38,6 +38,18 @@ class PlacesFragment : Fragment() {
     private val vmodel: PlaceViewModel by sharedViewModel()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     val LOCATION_PERMISSION_REQUEST_CODE = 111
+    val onLocationUpdated = { location: Location ->
+        Toast.makeText(requireContext() , "location updated" + location?.latitude + "," + location?.longitude , Toast.LENGTH_SHORT).show()
+
+    }
+    private val  locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult?) {
+            locationResult ?: return
+            for (location in locationResult.locations){
+                onLocationUpdated(location)
+            }
+        }
+    }
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -54,31 +66,7 @@ class PlacesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(
-                requireActivity(), arrayOf(
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ),
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
-        } else {
-            //permission granted
 
-        }
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                Toast.makeText(requireContext() , "location updated" + location?.latitude + "," + location?.longitude , Toast.LENGTH_SHORT).show()
-                // Got last known location. In some rare situations this can be null.
-            }
         Mapbox.getInstance(requireContext(), MAP_ACCESS_TOKEN)
         return inflater.inflate(R.layout.fragment_places, container, false)
     }
@@ -171,6 +159,39 @@ class PlacesFragment : Fragment() {
         }
     }
 
+    private fun startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                requireActivity(), arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        } else {
+            //permission granted
+            fusedLocationClient.requestLocationUpdates(
+                LocationRequest(),
+                locationCallback,
+                Looper.getMainLooper())
+//            fusedLocationClient.lastLocation
+//                .addOnSuccessListener { location: Location? ->
+//                    location?.let{onLocationUpdated(it)}
+//
+//                    // Got last known location. In some rare situations this can be null.
+//                }
+        }
+
+    }
+
     override fun onStart() {
         super.onStart()
         mapView.onStart()
@@ -179,11 +200,17 @@ class PlacesFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         mapView.onResume()
+        startLocationUpdates()
     }
 
     override fun onPause() {
         super.onPause()
         mapView.onPause()
+        stopLocationUpdates()
+    }
+
+    private fun stopLocationUpdates() {
+        fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
     override fun onStop() {
