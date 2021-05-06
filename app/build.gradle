@@ -91,8 +91,15 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0-alpha08'
     implementation 'androidx.viewpager2:viewpager2:1.0.0-beta02'
 
+    //mapbox
     implementation 'com.mapbox.mapboxsdk:mapbox-android-core:3.1.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:8.0.0'
+
+    //play services
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
+
+   //gms location
+    implementation  'com.google.android.gms:play-services-location:18.0.0'
 
     //test
     testImplementation 'junit:junit:4.+'
