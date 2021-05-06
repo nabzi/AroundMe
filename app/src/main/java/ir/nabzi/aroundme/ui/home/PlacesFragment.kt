@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.gms.location.*
 import com.mapbox.mapboxsdk.Mapbox
