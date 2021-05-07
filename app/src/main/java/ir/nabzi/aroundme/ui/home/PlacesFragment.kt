@@ -13,7 +13,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.gms.location.*
 import com.mapbox.mapboxsdk.Mapbox
@@ -21,6 +20,7 @@ import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.TransitionOptions
@@ -40,21 +40,22 @@ class PlacesFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     val LOCATION_PERMISSION_REQUEST_CODE = 111
     val onLocationUpdated = { location: Location ->
-        Toast.makeText(requireContext() , "location updated" + location?.latitude + "," + location?.longitude , Toast.LENGTH_SHORT).show()
-
+        Toast.makeText(requireContext(), "location updated" + location?.latitude + "," + location?.longitude, Toast.LENGTH_SHORT).show()
+        setCamera(location)
     }
-    private val  locationCallback = object : LocationCallback() {
+    private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult?) {
             locationResult ?: return
-            for (location in locationResult.locations){
+            for (location in locationResult.locations) {
                 onLocationUpdated(location)
             }
         }
     }
+
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
+            requestCode: Int,
+            permissions: Array<String>,
+            grantResults: IntArray
     ) {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -62,9 +63,10 @@ class PlacesFragment : Fragment() {
             }
         }
     }
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
@@ -79,7 +81,7 @@ class PlacesFragment : Fragment() {
                     if (it.isNotEmpty())
                         showPlaces(it)
                 }
-                when(resource?.status){
+                when (resource?.status) {
                     Status.SUCCESS -> showProgress(false)
                     Status.ERROR -> {
                         showProgress(false)
@@ -100,25 +102,20 @@ class PlacesFragment : Fragment() {
         initMap(places)
     }
 
+    var mapboxMap: MapboxMap? = null
     private fun initMap(places: List<Place>) {
         mapView.getMapAsync(OnMapReadyCallback { mapboxMap ->
             mapboxMap.setStyle(
-                Style.MAPBOX_STREETS
+                    Style.MAPBOX_STREETS
             ) { style ->
                 style.transition = TransitionOptions(0, 0, false);
-                val position = CameraPosition.Builder()
-                    .target(LatLng(places[1].location_lat, places[1].location_lng))
-                    .zoom(15.0)
-                    .build()
-                mapboxMap.animateCamera(
-                    CameraUpdateFactory.newCameraPosition(position),
-                    1000
-                );
+                this.mapboxMap = mapboxMap
+//                setCamera(mapboxMap)
                 for (place in places)
                     mapboxMap.addMarker(
-                        MarkerOptions()
-                            .position(LatLng(place.location_lat, place.location_lng))
-                            .title(place.id)
+                            MarkerOptions()
+                                    .position(LatLng(place.location_lat, place.location_lng))
+                                    .title(place.id)
                     )
                 mapboxMap.setOnMarkerClickListener { it ->
                     selectPlace(it.title)
@@ -126,6 +123,22 @@ class PlacesFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun setCamera(location: Location) {
+
+        val position = CameraPosition.Builder()
+                .target(LatLng(location.latitude, location.longitude))
+                .zoom(15.0)
+                .build()
+        mapboxMap?.animateCamera(
+                CameraUpdateFactory.newCameraPosition(position),
+                1000
+        )
+        //todo : add places markers
+        mapboxMap?.addMarker(
+                MarkerOptions()
+                        .position(LatLng(location.latitude, location.longitude)))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -136,10 +149,10 @@ class PlacesFragment : Fragment() {
     private fun initViewPager(places: List<Place>) {
         viewPager?.adapter = object : FragmentStateAdapter(this) {
             override fun createFragment(position: Int): Fragment {
-                 return PlaceItemFragment.create(
-                     places[position]
-                 ) { id ->
-                     vmodel.selectedPlaceId.postValue(id)
+                return PlaceItemFragment.create(
+                        places[position]
+                ) { id ->
+                    vmodel.selectedPlaceId.postValue(id)
 //                    findNavController().navigate(
 //                        PlacesFragmentDirections.actionPlacesFragmentToPlaceDetailsFragment()
 //                    )
@@ -162,33 +175,33 @@ class PlacesFragment : Fragment() {
 
     private fun startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
+                        requireContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermissions(
-                requireActivity(), arrayOf(
+                    requireActivity(), arrayOf(
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION
-                ),
-                LOCATION_PERMISSION_REQUEST_CODE
+            ),
+                    LOCATION_PERMISSION_REQUEST_CODE
             )
         } else {
             //permission granted
+            val locationRequest = LocationRequest().apply {
+                fastestInterval = 5000
+                interval = 10000
+                priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            }
             fusedLocationClient.requestLocationUpdates(
-                LocationRequest(),
-                locationCallback,
-                Looper.getMainLooper())
-//            fusedLocationClient.lastLocation
-//                .addOnSuccessListener { location: Location? ->
-//                    location?.let{onLocationUpdated(it)}
-//
-//                    // Got last known location. In some rare situations this can be null.
-//                }
+                    locationRequest,
+                    locationCallback,
+                    Looper.getMainLooper())
+
         }
 
     }
