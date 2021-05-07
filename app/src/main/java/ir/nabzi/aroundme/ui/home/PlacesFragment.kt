@@ -201,6 +201,39 @@ class PlacesFragment : Fragment() {
 
     }
 
+    private fun startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                    requireActivity(), arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            ),
+                    LOCATION_PERMISSION_REQUEST_CODE
+            )
+        } else {
+            //permission granted
+            val locationRequest = LocationRequest().apply {
+                fastestInterval = 5000
+                interval = 10000
+                priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            }
+            fusedLocationClient.requestLocationUpdates(
+                    locationRequest,
+                    locationCallback,
+                    Looper.getMainLooper())
+
+        }
+
+    }
+
     override fun onStart() {
         super.onStart()
         mapView.onStart()
