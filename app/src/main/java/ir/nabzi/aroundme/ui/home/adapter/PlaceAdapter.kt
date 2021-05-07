@@ -11,7 +11,7 @@ import ir.nabzi.aroundme.R
 import ir.nabzi.aroundme.databinding.ItemPlaceLayoutBinding
 import ir.nabzi.aroundme.model.Place
 
-abstract class PlaceAdapter(val context: Context, val onItemClick: (Place) -> Unit
+abstract class PlaceAdapter(val context: Context, val onItemClick: (String) -> Unit
 ) :
         ListAdapter<Place, RecyclerView.ViewHolder>(diffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceViewHolder =
@@ -53,8 +53,8 @@ abstract class PlaceAdapter(val context: Context, val onItemClick: (Place) -> Un
             with(binding) {
                 placeitem = item
                 binding.cvPlace.setOnClickListener {
-                    aPlace?.let { m ->
-                        onItemClick(m)
+                    aPlace?.let {
+                        onItemClick(it.id)
                     }
                 }
                 executePendingBindings()

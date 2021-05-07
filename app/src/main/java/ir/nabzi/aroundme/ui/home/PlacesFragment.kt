@@ -14,6 +14,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.*
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
@@ -148,7 +150,7 @@ class PlacesFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = object : PlaceAdapter(requireContext(), {}){
+        adapter = object : PlaceAdapter(requireContext(), {id ->  goToPlace(id)}){
             override fun loadMore(lastItem: Place) {
                 //TODO("Not yet implemented")
                 Toast.makeText(requireContext(),"load more" , Toast.LENGTH_SHORT).show()
@@ -161,9 +163,9 @@ class PlacesFragment : Fragment() {
 
     fun goToPlace(id: String){
         vmodel.selectedPlaceId.postValue(id)
-//                    findNavController().navigate(
-//                        PlacesFragmentDirections.actionPlacesFragmentToPlaceDetailsFragment()
-//                    )
+        this.findNavController().navigate(
+            PlacesFragmentDirections.actionPlacesFragmentToPlaceDetailsFragment()
+        )
     }
 
 
