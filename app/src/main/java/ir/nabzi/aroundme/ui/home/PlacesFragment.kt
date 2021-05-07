@@ -1,6 +1,7 @@
 package ir.nabzi.aroundme.ui.home
 
 import android.Manifest
+import android.content.ClipData.Item
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -13,7 +14,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.gms.location.*
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
@@ -29,6 +29,7 @@ import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.MAP_ACCESS_TOKEN
 import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.showError
 import ir.nabzi.aroundme.model.Place
 import ir.nabzi.aroundme.model.Status
+import ir.nabzi.aroundme.ui.home.adapter.PlaceAdapter
 import kotlinx.android.synthetic.main.fragment_places.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -39,6 +40,7 @@ class PlacesFragment : Fragment() {
     private val vmodel: PlaceViewModel by sharedViewModel()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     val LOCATION_PERMISSION_REQUEST_CODE = 111
+    private lateinit var adapter: PlaceAdapter
     val onLocationUpdated = { location: Location ->
         Toast.makeText(requireContext(), "location updated" + location?.latitude + "," + location?.longitude, Toast.LENGTH_SHORT).show()
         setCamera(location)
@@ -98,7 +100,7 @@ class PlacesFragment : Fragment() {
     }
 
     private fun showPlaces(places: List<Place>) {
-        initViewPager(places)
+       adapter.submitList(places)
         initMap(places)
     }
 
@@ -125,6 +127,10 @@ class PlacesFragment : Fragment() {
         })
     }
 
+    private fun selectPlace(title: String?) {
+        TODO("Not yet implemented")
+    }
+
     private fun setCamera(location: Location) {
 
         val position = CameraPosition.Builder()
@@ -142,64 +148,25 @@ class PlacesFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        adapter = object : PlaceAdapter(requireContext(), {}){
+            override fun loadMore(lastItem: Place) {
+                //TODO("Not yet implemented")
+                Toast.makeText(requireContext(),"load more" , Toast.LENGTH_SHORT).show()
+            }
+        }
+        rvPlace.adapter = adapter
         mapView.onCreate(savedInstanceState);
         subscribeUi()
     }
 
-    private fun initViewPager(places: List<Place>) {
-        viewPager?.adapter = object : FragmentStateAdapter(this) {
-            override fun createFragment(position: Int): Fragment {
-                return PlaceItemFragment.create(
-                        places[position]
-                ) { id ->
-                    vmodel.selectedPlaceId.postValue(id)
+    fun goToPlace(id: String){
+        vmodel.selectedPlaceId.postValue(id)
 //                    findNavController().navigate(
 //                        PlacesFragmentDirections.actionPlacesFragmentToPlaceDetailsFragment()
 //                    )
-                }
-
-
-            }
-
-            override fun getItemCount(): Int {
-                return places.size
-            }
-        }
     }
 
 
-    private fun startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(
-                    requireActivity(), arrayOf(
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-            ),
-                    LOCATION_PERMISSION_REQUEST_CODE
-            )
-        } else {
-            //permission granted
-            val locationRequest = LocationRequest().apply {
-                fastestInterval = 5000
-                interval = 10000
-                priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-            }
-            fusedLocationClient.requestLocationUpdates(
-                    locationRequest,
-                    locationCallback,
-                    Looper.getMainLooper())
-
-        }
-
-    }
 
     private fun startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(
