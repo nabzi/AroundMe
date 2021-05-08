@@ -5,6 +5,7 @@ import ir.nabzi.aroundme.data.remote.ApiService
 import ir.nabzi.aroundme.model.NetworkCall
 import ir.nabzi.aroundme.model.Place
 import ir.nabzi.aroundme.model.Resource
+import ir.nabzi.aroundme.model.VenueResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -60,4 +61,17 @@ class PlaceRepositoryImpl(
         }.fetch()
     }
 
+    private fun venueResponseToPlace(venueResponse: VenueResponse):Place{
+        venueResponse.run {
+            return Place(
+                id,
+                name,
+                null,
+                categories?.get(0)?.icon?.prefix+ categories?.get(0)?.icon?.suffix,
+                10,
+                location.lat,
+                location.lng
+            )
+        }
+    }
 }

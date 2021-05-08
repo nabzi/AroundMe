@@ -1,4 +1,5 @@
 package ir.nabzi.aroundme.model
+import ir.nabzi.aroundme.model.Resource.Companion.error
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.HttpException
@@ -24,32 +25,32 @@ abstract class NetworkCall<ResultType> {
                     JSONObject(it.charStream().readText()).getString("message")
                 }
 
-                Resource.error(errorMsg?:"" ,null, response.code())
+                error(errorMsg?:"" ,null, response.code())
             }
 
         } catch (e: HttpException) {
             e.printStackTrace()
-            Resource.error(e.message(), null, e.code())
+            error(e.message(), null, e.code())
 
         } catch (e: ConnectException) {
             e.printStackTrace()
-            Resource.error("Network Connection error",null, ConnectException)
+            error("Network Connection error",null, ConnectException)
 
         } catch (e: SocketTimeoutException) {
             e.printStackTrace()
-            Resource.error( "Network Connection error",null, SocketTimeoutException)
+            error( "Network Connection error",null, SocketTimeoutException)
 
         }catch (e : UnknownHostException){
             e.printStackTrace()
-            Resource.error("Network Connection error",null, UnknownHostException)
+            error("Network Connection error",null, UnknownHostException)
 
         }catch (e : JSONException){
             e.printStackTrace()
-            Resource.error("JSONException",null, JSONException)
+            error("JSONException",null, JSONException)
 
         } catch (e: Exception) {
             e.printStackTrace()
-            Resource.error(e.message,null, Exception)
+            error(e.message.toString(),null, Exception)
         }
     }
 

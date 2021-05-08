@@ -13,9 +13,9 @@ data class Place
         @PrimaryKey
         val id: String,
         val title: String,
-        val subTitle: String,
-        val imageUrl: String,
-        val rating: Int,
+        val subTitle: String? = null,
+        val imageUrl: String? = null,
+        val rating: Int? = null,
         val location_lat: Double,
         val location_lng: Double
 ) : Parcelable

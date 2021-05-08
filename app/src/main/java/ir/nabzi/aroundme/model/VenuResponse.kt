@@ -7,9 +7,9 @@ data class VenueResponse(
     val id : String,
     val name : String ,
     val location : LocationResponse,
-    val url : String,
-    val contact : ContactResponse,
-    val categories : List<CategoryResponse>
+    val url : String?,
+    val contact : ContactResponse?,
+    val categories : List<CategoryResponse>?
 )
 
 data class CategoryResponse(
