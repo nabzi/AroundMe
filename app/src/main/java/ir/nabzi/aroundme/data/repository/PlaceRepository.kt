@@ -5,12 +5,14 @@ import ir.nabzi.aroundme.data.remote.ApiService
 import ir.nabzi.aroundme.model.NetworkCall
 import ir.nabzi.aroundme.model.Place
 import ir.nabzi.aroundme.model.Resource
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import retrofit2.Response
 
 interface PlaceRepository {
-    suspend fun getPlaces(
+    fun getPlaces(
+        coroutineScope: CoroutineScope,
         shouldFetch: Boolean
     ): StateFlow<Resource<List<Place>>?>
 }
@@ -20,25 +22,21 @@ class PlaceRepositoryImpl(
     val apiServices: ApiService
 ) : PlaceRepository {
 
-    override suspend fun getPlaces(shouldFetch: Boolean): StateFlow<Resource<List<Place>>?> {
-        var stateFlow: MutableStateFlow<Resource<List<Place>>?> =
-            MutableStateFlow(Resource.loading(null))
-        stateFlow.emit(
-            object : RemoteResource<List<Place>>() {
+    override fun getPlaces( coroutineScope: CoroutineScope,shouldFetch: Boolean)
+            : StateFlow<Resource<List<Place>>?> {
+            return  object : RemoteResource<List<Place>>() {
                 override suspend fun updateDB(result: List<Place>) {
                     updateDBSource(result)
                 }
 
-                override fun getFromDB(): List<Place> {
+                override fun getFromDB(): Flow<List<Place>> {
                     return getPlacesFromDBSource()
                 }
 
                 override suspend fun pullFromServer(): Resource<List<Place>> {
                     return getPlacesFromRemoteSource()
                 }
-            }.get(true)
-        )
-        return stateFlow
+            }.get( coroutineScope,true)
     }
 
     /**Data Sources:
@@ -50,8 +48,8 @@ class PlaceRepositoryImpl(
         placeDao.addList(result)
     }
 
-    private fun getPlacesFromDBSource(): List<Place> {
-        return placeDao.getPlaces()
+    private fun getPlacesFromDBSource(): Flow<List<Place>> {
+        return placeDao.getPlacesFlow()
     }
 
     private suspend fun getPlacesFromRemoteSource(): Resource<List<Place>> {

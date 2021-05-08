@@ -1,7 +1,14 @@
 package ir.nabzi.aroundme.data.repository
 
+import ir.nabzi.aroundme.model.Place
 import ir.nabzi.aroundme.model.Resource
 import ir.nabzi.aroundme.model.Status
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 /**
 *   RemoteResource<ResultType> is an abstract class that can be used for resources that can be fetched
@@ -11,29 +18,46 @@ import ir.nabzi.aroundme.model.Status
  *   data is not present in database yet.
 * */
 abstract class RemoteResource<ResultType> {
-    suspend fun get(shouldFetch : Boolean): Resource<ResultType>{
-        return if (shouldFetch) {
-            val resource = pullFromServer()
+    fun get(coroutineScope: CoroutineScope, shouldFetch : Boolean): StateFlow<Resource<ResultType>> {
+        var stateFlow: MutableStateFlow<Resource<ResultType>> = MutableStateFlow(Resource.loading(null))
+        coroutineScope.launch {
+            if (shouldFetch) {
+                val resource = pullFromServer()
 
-            if (resource.status == Status.ERROR) {
-                Resource.error<ResultType>(
-                    resource.message ?: "error loading from server", getFromDB()
-                )
-            } else {
-                resource.data?.let {
-                    updateDB(it)
+                if (resource.status == Status.ERROR) {
+                    getFromDB().collect {
+                        stateFlow.emit(
+                            Resource.error<ResultType>(
+                                resource.message ?: "error loading from server", it
+                            )
+                        )
+                    }
+
+                } else {
+                    resource.data?.let {
+                        updateDB(it)
+                    }
+                    getFromDB().collect {
+                        stateFlow.emit(
+                            Resource.success(it)
+                        )
+                    }
                 }
-                Resource.success(getFromDB())
-            }
 
-        } else {
-            Resource.success(getFromDB())
+            } else {
+                getFromDB().collect {
+                    stateFlow.emit(
+                        Resource.success(it)
+                    )
+                }
+            }
         }
+        return stateFlow
     }
 
     abstract suspend fun updateDB(result : ResultType)
 
-    abstract fun getFromDB(): ResultType
+    abstract fun getFromDB(): Flow<ResultType>
 
     abstract suspend fun pullFromServer(): Resource<ResultType>
 }

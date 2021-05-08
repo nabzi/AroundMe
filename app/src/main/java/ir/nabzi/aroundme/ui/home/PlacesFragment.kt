@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.whenStarted
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.*
@@ -80,18 +81,20 @@ class PlacesFragment : Fragment() {
 
     private fun subscribeUi() {
         this.lifecycleScope.launch {
-            vmodel.placeList.collect { resource ->
-                resource?.data?.let {
-                    if (it.isNotEmpty())
-                        showPlaces(it)
-                }
-                when (resource?.status) {
-                    Status.SUCCESS -> showProgress(false)
-                    Status.ERROR -> {
-                        showProgress(false)
-                        showError(resource.message)
+            whenStarted {
+                vmodel.placeList.collect { resource ->
+                    resource?.data?.let {
+                        if (it.isNotEmpty())
+                            showPlaces(it)
                     }
-                    Status.LOADING -> showProgress(true)
+                    when (resource?.status) {
+                        Status.SUCCESS -> showProgress(false)
+                        Status.ERROR -> {
+                            showProgress(false)
+                            showError(resource.message)
+                        }
+                        Status.LOADING -> showProgress(true)
+                    }
                 }
             }
         }

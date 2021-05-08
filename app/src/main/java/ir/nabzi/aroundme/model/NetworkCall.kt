@@ -29,7 +29,7 @@ abstract class NetworkCall<ResultType> {
 
         } catch (e: HttpException) {
             e.printStackTrace()
-            Resource.error("", null, e.code())
+            Resource.error(e.message(), null, e.code())
 
         } catch (e: ConnectException) {
             e.printStackTrace()
@@ -45,11 +45,11 @@ abstract class NetworkCall<ResultType> {
 
         }catch (e : JSONException){
             e.printStackTrace()
-            Resource.error("",null, JSONException)
+            Resource.error("JSONException",null, JSONException)
 
         } catch (e: Exception) {
             e.printStackTrace()
-            Resource.error("",null, Exception)
+            Resource.error(e.message,null, Exception)
         }
     }
 
