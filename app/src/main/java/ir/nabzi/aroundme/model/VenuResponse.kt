@@ -3,6 +3,29 @@ package ir.nabzi.aroundme.model
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
+data class VenueResponse(
+    val id : String,
+    val name : String ,
+    val location : LocationResponse,
+    val url : String,
+    val contact : ContactResponse,
+    val categories : List<CategoryResponse>
+)
+
+data class CategoryResponse(
+    val id : String,
+    val name : String,
+    val icon : ImageResponse
+)
+
+data class ImageResponse(
+    val prefix : String,
+    val suffix : String
+)
+data class ContactResponse(
+    val phone : String,
+    val instagram : String
+)
 
 @Parcelize
 data class LocationResponse(val address : String, val lat:Double, val lng: Double): Parcelable
