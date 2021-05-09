@@ -8,7 +8,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 //const val BASE_URL = "https://api.foursquare.com/v2/"
-const val BASE_URL = "https://6086fa75a3b9c200173b758e.mockapi.io"
+const val BASE_URL = "https://api.tomtom.com/"
+const val API_KEY = "TISpuTy3g9ARSke4OHZS9u3TDjvuLqTL"
 
 fun createHttpClient(): OkHttpClient {
     val okHttpClientBuilder = OkHttpClient.Builder()

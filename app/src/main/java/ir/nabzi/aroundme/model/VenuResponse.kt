@@ -3,100 +3,73 @@ package ir.nabzi.aroundme.model
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
-data class VenueResponse(
+data class PointResponse(
     val id : String,
-    val name : String ,
-    val location : LocationResponse,
-    val url : String?,
-    val contact : ContactResponse?,
-    val categories : List<CategoryResponse>?
+    val score: Double,
+    val dist: Double,
+    val poi : PoiResponse,
 )
 
-data class CategoryResponse(
-    val id : String,
-    val name : String,
-    val icon : ImageResponse
-)
-
-data class ImageResponse(
-    val prefix : String,
-    val suffix : String
-)
-data class ContactResponse(
-    val phone : String,
-    val instagram : String
+data class PoiResponse(
+        val name : String ,
+        val position : LocationResponse,
+        val url : String?
 )
 
 @Parcelize
-data class LocationResponse(val address : String, val lat:Double, val lng: Double): Parcelable
+data class LocationResponse(val lat:Double, val lon: Double): Parcelable
+
 /**
- * "meta": {
-"code": 200
-"requestId": "609402d51d1a5131ee585294"
-}
-"response": {
-"venues": [
+ * {
+"type": "POI",
+"id": "g6JpZKc4MDgwMjY0oWOjSVJOoXanVW5pZmllZA==",
+"score": 99.3223953247,
+"dist": 677.6025945625089,
+"info": "search:geonames:8080264",
+"poi": {
+"name": "Pārk-e Almehdī",
+"categorySet": [
 {
-"id": "4e1bc7896284102ec19762b9"
-"name": "Azadi Square (میدان آزادی)"
-"contact": {
+"id": 9362008
 }
-"location": {
-"address": "Azadi Sq., Azadi St."
-"lat": 35.6996688757595
-"lng": 51.337952613830566
-"labeledLatLngs": [
-"0": {
-"label": "display"
-"lat": 35.6996688757595
-"lng": 51.337952613830566
-}
-]
-"distance": 52
-"cc": "IR"
-"city": "Tehran"
-"state": "Tehran"
-"country": "Iran"
-"formattedAddress": [
-"0": "Azadi Sq., Azadi St."
-"1": "Tehran, Tehran"
-]
-}
+],
 "categories": [
-"0": {
-"id": "4bf58dd8d48988d164941735"
-"name": "Plaza"
-"pluralName": "Plazas"
-"shortName": "Plaza"
-"icon": {
-"prefix": "https://ss3.4sqi.net/img/categories_v2/parks_outdoors/plaza_"
-"suffix": ".png"
-}
-"primary": true
-}
-]
-"stats": {
-"tipCount": 120
-"usersCount": 13409
-"checkinsCount": 33008
-}
-"hereNow": {
-"count": 1
-"summary": "One other person is here"
-"groups": [
-"0": {
-"type": "others"
-"name": "Other people here"
-"count": 1
-"items": [
-]
+"park"
+],
+"classifications": [
+{
+"code": "PARK_RECREATION_AREA",
+"names": [
+{
+"nameLocale": "en-US",
+"name": "park"
 }
 ]
 }
-"referralId": "v-1620313316"
-"venueChains": [
 ]
-"hasPerk": false
+},
+"address": {
+"municipality": "Tehran",
+"countrySubdivision": "Tehran",
+"countryCode": "IR",
+"country": "Iran",
+"countryCodeISO3": "IRN",
+"freeformAddress": "Tehrān, Tehran",
+"localName": "Tehrān"
+},
+"position": {
+"lat": 35.69443,
+"lon": 51.34059
+},
+"viewport": {
+"topLeftPoint": {
+"lat": 35.69533,
+"lon": 51.33948
+},
+"btmRightPoint": {
+"lat": 35.69353,
+"lon": 51.3417
+}
 }
 }
  *
