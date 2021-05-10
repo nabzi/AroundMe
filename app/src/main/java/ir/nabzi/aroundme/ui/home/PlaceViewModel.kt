@@ -4,6 +4,8 @@ import androidx.lifecycle.*
 import com.mapbox.mapboxsdk.geometry.LatLng
 import ir.nabzi.aroundme.data.repository.PlaceRepository
 
+class PlaceViewModel(placeRepository: PlaceRepository) : ViewModel() {
+    val currentLocation = MutableLiveData(LatLng(0.0, 0.0))//MutableStateFlow<LatLng>(LatLng(35.702, 51.3380464))
 class PlaceViewModel(val placeRepository: PlaceRepository) : ViewModel() {
     fun loadMorePlaces() {
         page.value = page.value?.plus(1)

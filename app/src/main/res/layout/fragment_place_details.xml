@@ -70,7 +70,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ivImage"
-                tools:text="rated 8 out of 10" />
+                tools:text="rated 80 out of 100" />
             <RelativeLayout
                 android:id="@+id/rlRating"
                 android:layout_width="wrap_content"
@@ -86,7 +86,7 @@
                     android:layout_centerInParent="true"
                     android:layout_marginStart="8dp"
                     android:indeterminate="false"
-                    android:max="10"
+                    android:max="100"
                     android:progress="@{vmodel.place.rating}"
                     android:progressDrawable="@drawable/progress_circle"
                     android:secondaryProgress="10" />
@@ -108,7 +108,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="16dp"
-                android:text="@{String.format(@string/likes,vmodel.place.rating * 10)}"
+                android:text="@{String.format(@string/likes,vmodel.place.rating )}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/rlRating"
@@ -133,7 +133,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:text="@{String.format(@string/dislikes,(10 - vmodel.place.rating)*10)}"
+                android:text="@{String.format(@string/dislikes,100 - vmodel.place.rating)}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/pbLikes"
@@ -147,7 +147,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:max="10"
-                android:progress="@{10 - vmodel.place.rating}"
+                android:progress="@{100 - vmodel.place.rating}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/rlRating"
