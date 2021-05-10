@@ -13,6 +13,13 @@ class PlaceViewModel(val placeRepository: PlaceRepository) : ViewModel() {
         }
     }
 
+    fun onLocationUpdateReceived(latLng: LatLng) {
+        currentLocation.value.let {
+            if (it == null || (latLng.distanceTo(it) > 100))
+                currentLocation.postValue(it)
+        }
+    }
+
     var placeList =
             currentLocation.switchMap {
                 page.postValue(1)

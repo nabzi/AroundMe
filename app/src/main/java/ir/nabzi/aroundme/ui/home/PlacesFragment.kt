@@ -47,28 +47,9 @@ class PlacesFragment : Fragment() {
     val LOCATION_PERMISSION_REQUEST_CODE = 111
     private lateinit var adapter: PlaceAdapter
     val onLocationUpdated = { location: Location ->
-        //TODO : refactor kotlin
-        vmodel.currentLocation.value?.let {
-            if (LatLng(location.latitude, location.longitude).distanceTo(it) > 100)
-            {
-                Toast.makeText(requireContext(), "location change" + location?.latitude + "," + location?.longitude, Toast.LENGTH_SHORT).show()
-                setCamera(location)
-                requestNearbyPlaces(location)
-            }
-        }
-        if(vmodel.currentLocation.value == null){
-            setCamera(location)
-            requestNearbyPlaces(location)
-        }
-
+        vmodel.onLocationUpdateReceived(LatLng(location.latitude , location.longitude))
     }
 
-    private fun requestNearbyPlaces(location: Location) {
-        lifecycleScope.launch {
-            vmodel.currentLocation.postValue(LatLng(location.latitude, location.longitude))
-        }
-
-    }
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult?) {
@@ -120,7 +101,7 @@ class PlacesFragment : Fragment() {
             Toast.makeText(requireContext() , "page=" + it , Toast.LENGTH_SHORT).show()
         })
         vmodel.currentLocation.observe(viewLifecycleOwner , Observer {
-
+            setCamera(it)
         })
     }
 
@@ -161,10 +142,10 @@ class PlacesFragment : Fragment() {
 
     }
 
-    private fun setCamera(location: Location) {
+    private fun setCamera(latLng: LatLng) {
 
         val position = CameraPosition.Builder()
-                .target(LatLng(location.latitude, location.longitude))
+                .target(latLng)
                 .zoom(15.0)
                 .build()
         mapboxMap?.animateCamera(
