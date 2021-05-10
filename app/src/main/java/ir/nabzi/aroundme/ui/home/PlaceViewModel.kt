@@ -7,7 +7,7 @@ import ir.nabzi.aroundme.model.Resource
 import kotlinx.coroutines.flow.StateFlow
 
 class PlaceViewModel(placeRepository: PlaceRepository) : ViewModel() {
-    var placeList : StateFlow<Resource<List<Place>>?> =  placeRepository.getPlacesNearLocation(viewModelScope,true)
+    var placeList : StateFlow<Resource<List<Place>>?> =  placeRepository.getPlacesNearLocation(35.702,51.3380464,viewModelScope,true)
     val selectedPlaceId = MutableLiveData<String>()
     val place = selectedPlaceId.map { _id ->
         placeList.value?.data?.firstOrNull { it.id == _id }

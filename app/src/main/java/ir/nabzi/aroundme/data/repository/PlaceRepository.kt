@@ -2,10 +2,7 @@ package ir.nabzi.aroundme.data.repository
 
 import ir.nabzi.aroundme.data.db.PlaceDao
 import ir.nabzi.aroundme.data.remote.ApiService
-import ir.nabzi.aroundme.model.NetworkCall
-import ir.nabzi.aroundme.model.Place
-import ir.nabzi.aroundme.model.Resource
-import ir.nabzi.aroundme.model.PointResponse
+import ir.nabzi.aroundme.model.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -55,13 +52,13 @@ class PlaceRepositoryImpl(
     }
 
     private suspend fun getPlacesFromRemoteSource(lat: Double, lon: Double): Resource<List<Place>> {
-        val res = object : NetworkCall<List<PointResponse>>() {
-            override suspend fun createCall(): Response<List<PointResponse>> {
+        val res = object : NetworkCall<NearbySearchResponse>() {
+            override suspend fun createCall(): Response<NearbySearchResponse> {
                 return apiServices.getPlaceList(lat, lon)
             }
         }.fetch()
         return Resource(res.status,
-                res.data?.map { pointResponseToPlace(it) }, res.message, res.errorCode)
+                res.data?.results?.map { pointResponseToPlace(it) }, res.message, res.errorCode)
     }
 
     private fun pointResponseToPlace(pointResponse: PointResponse): Place {
@@ -72,8 +69,8 @@ class PlaceRepositoryImpl(
                     null,
                     "",
                     score.toInt(),
-                    poi.position.lat,
-                    poi.position.lon
+                    position.lat,
+                    position.lon
             )
         }
     }
