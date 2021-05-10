@@ -12,6 +12,7 @@ interface PlaceRepository {
     fun getPlacesNearLocation(
             lat: Double, lon: Double,
             coroutineScope: CoroutineScope,
+            page : Int,
             shouldFetch: Boolean
     ): StateFlow<Resource<List<Place>>?>
 }
@@ -20,11 +21,13 @@ class PlaceRepositoryImpl(
         val placeDao: PlaceDao,
         val apiServices: ApiService
 ) : PlaceRepository {
-
-    override fun getPlacesNearLocation(lat: Double, lon: Double, coroutineScope: CoroutineScope, shouldFetch: Boolean)
+    val PAGE_SIZE = 5
+    override fun getPlacesNearLocation(lat: Double, lon: Double, coroutineScope: CoroutineScope, page : Int, shouldFetch: Boolean)
             : StateFlow<Resource<List<Place>>?> {
         return object : RemoteResource<List<Place>>() {
             override suspend fun updateDB(result: List<Place>) {
+                if(page == 1  )
+                    clearDB()
                 updateDBSource(result)
             }
 
@@ -33,7 +36,7 @@ class PlaceRepositoryImpl(
             }
 
             override suspend fun pullFromServer(): Resource<List<Place>> {
-                return getPlacesFromRemoteSource(lat, lon)
+                return getPlacesFromRemoteSource(lat, lon , page)
             }
         }.get(coroutineScope, true)
     }
@@ -44,18 +47,21 @@ class PlaceRepositoryImpl(
      * and added as dependency for repository
      **/
     private suspend fun updateDBSource(result: List<Place>) {
-        placeDao.removeAll()
         placeDao.addList(result)
+    }
+
+    private suspend fun clearDB(){
+        placeDao.removeAll()
     }
 
     private fun getPlacesFromDBSource(): Flow<List<Place>> {
         return placeDao.getPlacesFlow()
     }
 
-    private suspend fun getPlacesFromRemoteSource(lat: Double, lon: Double): Resource<List<Place>> {
+    private suspend fun getPlacesFromRemoteSource(lat: Double, lon: Double , page : Int): Resource<List<Place>> {
         val res = object : NetworkCall<NearbySearchResponse>() {
             override suspend fun createCall(): Response<NearbySearchResponse> {
-                return apiServices.getPlaceList(lat, lon)
+                return apiServices.getPlaceList(lat, lon , PAGE_SIZE ,(page - 1) * PAGE_SIZE)
             }
         }.fetch()
         return Resource(res.status,
