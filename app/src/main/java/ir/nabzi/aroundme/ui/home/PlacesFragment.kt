@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.whenStarted
 import androidx.navigation.fragment.NavHostFragment
@@ -47,7 +48,16 @@ class PlacesFragment : Fragment() {
     val onLocationUpdated = { location: Location ->
         Toast.makeText(requireContext(), "location updated" + location?.latitude + "," + location?.longitude, Toast.LENGTH_SHORT).show()
         setCamera(location)
+        requestNearbyPlaces(location)
     }
+
+    private fun requestNearbyPlaces(location: Location) {
+        lifecycleScope.launch {
+            vmodel.currentLocation.postValue(LatLng(location.latitude, location.longitude))
+        }
+
+    }
+
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult?) {
             locationResult ?: return
@@ -80,32 +90,29 @@ class PlacesFragment : Fragment() {
     }
 
     private fun subscribeUi() {
-        this.lifecycleScope.launch {
-            whenStarted {
-                vmodel.placeList.collect { resource ->
-                    resource?.data?.let {
-                        if (it.isNotEmpty())
-                            showPlaces(it)
-                    }
-                    when (resource?.status) {
-                        Status.SUCCESS -> showProgress(false)
-                        Status.ERROR -> {
-                            showProgress(false)
-                            showError(resource.message)
-                        }
-                        Status.LOADING -> showProgress(true)
-                    }
-                }
+        vmodel.placeList.observe(viewLifecycleOwner, Observer { resource ->
+            resource?.data?.let {
+                if (it.isNotEmpty())
+                    showPlaces(it)
             }
-        }
+            when (resource?.status) {
+                Status.SUCCESS -> showProgress(false)
+                Status.ERROR -> {
+                    showProgress(false)
+                    showError(resource.message)
+                }
+                Status.LOADING -> showProgress(true)
+            }
+        })
     }
+
 
     private fun showProgress(show: Boolean) {
         progressBar.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun showPlaces(places: List<Place>) {
-       adapter.submitList(places)
+        adapter.submitList(places)
         initMap(places)
     }
 
@@ -153,10 +160,10 @@ class PlacesFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = object : PlaceAdapter(requireContext(), {id ->  goToPlace(id)}){
+        adapter = object : PlaceAdapter(requireContext(), { id -> goToPlace(id) }) {
             override fun loadMore(lastItem: Place) {
                 //TODO("Not yet implemented")
-                Toast.makeText(requireContext(),"load more" , Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "load more", Toast.LENGTH_SHORT).show()
             }
         }
         rvPlace.adapter = adapter
@@ -164,13 +171,12 @@ class PlacesFragment : Fragment() {
         subscribeUi()
     }
 
-    fun goToPlace(id: String){
+    fun goToPlace(id: String) {
         vmodel.selectedPlaceId.postValue(id)
         this.findNavController().navigate(
-            PlacesFragmentDirections.actionPlacesFragmentToPlaceDetailsFragment()
+                PlacesFragmentDirections.actionPlacesFragmentToPlaceDetailsFragment()
         )
     }
-
 
 
     private fun startLocationUpdates() {

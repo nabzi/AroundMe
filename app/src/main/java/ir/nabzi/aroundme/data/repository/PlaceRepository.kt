@@ -44,6 +44,7 @@ class PlaceRepositoryImpl(
      * and added as dependency for repository
      **/
     private suspend fun updateDBSource(result: List<Place>) {
+        placeDao.removeAll()
         placeDao.addList(result)
     }
 

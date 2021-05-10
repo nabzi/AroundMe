@@ -21,4 +21,7 @@ abstract class PlaceDao {
 
     @Query("SELECT * FROM place " )
     abstract fun getPlacesFlow(): Flow<List<Place>>
+
+    @Query("Delete From place" )
+    abstract suspend fun removeAll()
 }
