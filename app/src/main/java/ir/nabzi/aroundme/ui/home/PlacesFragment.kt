@@ -133,7 +133,7 @@ class PlacesFragment : Fragment() {
     }
 
     private fun selectPlace(title: String?) {
-        TODO("Not yet implemented")
+
     }
 
     private fun setCamera(location: Location) {
@@ -147,9 +147,9 @@ class PlacesFragment : Fragment() {
                 1000
         )
         //todo : add places markers
-        mapboxMap?.addMarker(
-                MarkerOptions()
-                        .position(LatLng(location.latitude, location.longitude)))
+//        mapboxMap?.addMarker(
+//                MarkerOptions()
+//                        .position(LatLng(location.latitude, location.longitude)))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

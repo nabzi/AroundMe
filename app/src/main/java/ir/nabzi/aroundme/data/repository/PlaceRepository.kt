@@ -67,11 +67,22 @@ class PlaceRepositoryImpl(
                     id,
                     poi.name,
                     null,
-                    "",
+                    getImageUrl(poi.classifications[0].code ),
                     score.toInt(),
                     position.lat,
                     position.lon
             )
+        }
+    }
+
+    private fun getImageUrl(code: String): String? {
+        return when(code){
+            "SCHOOL" ->  "http://riyainfosystems.com/wp-content/uploads/2019/06/5b76b45cbb3a6.jpg"
+            "PARK_RECREATION_AREA" -> "https://www.hamburg.de/image/3242800/16x9/990/557/19bcf03f011e6d1477b4e4f17be8a7a5/Cd/bild-fuer-einleitungstext.jpg"
+            "HOTEL_MOTEL" -> "https://www.epersianhotel.com/images/other-hotel/kish/toranj/dbl-room1.jpg"
+            "MARKET" -> "https://www.epersianhotel.com/images/other-hotel/kish/toranj/view7.jpg"
+            "HEALTH_CARE_SERVICE" ->"https://www.healthcareitnews.com/sites/hitn/files/120319%20CaroMont%20Regional%20Medical%20Center%20712.jpg"
+            else -> "https://cdn.britannica.com/s:690x388,c:crop/12/130512-004-AD0A7CA4/campus-Riverside-Ottawa-The-Hospital-Ont.jpg"
         }
     }
 }
