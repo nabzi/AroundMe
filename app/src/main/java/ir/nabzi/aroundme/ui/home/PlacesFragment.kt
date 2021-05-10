@@ -48,6 +48,7 @@ class PlacesFragment : Fragment() {
     private lateinit var adapter: PlaceAdapter
     val onLocationUpdated = { location: Location ->
         vmodel.onLocationUpdateReceived(LatLng(location.latitude , location.longitude))
+        setCamera(LatLng(location.latitude , location.longitude))
     }
 
 
@@ -56,6 +57,7 @@ class PlacesFragment : Fragment() {
             locationResult ?: return
             for (location in locationResult.locations) {
                 onLocationUpdated(location)
+
             }
         }
     }
