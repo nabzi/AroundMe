@@ -13,6 +13,8 @@ interface ApiService {
     @GET("/search/2/nearbySearch/.json")
     suspend  fun getPlaceList(@Query("lat")lat : Double,
                               @Query("lon") lon : Double,
+                              @Query("limit") limit : Int ,
+                              @Query("ofs") offset : Int,
                               @Query("key")key : String = API_KEY)
             : Response<NearbySearchResponse>
 }
