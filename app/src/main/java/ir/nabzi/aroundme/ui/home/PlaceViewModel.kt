@@ -9,7 +9,7 @@ import ir.nabzi.aroundme.model.Resource
 import kotlinx.coroutines.flow.*
 
 class PlaceViewModel(placeRepository: PlaceRepository) : ViewModel() {
-    val currentLocation = MutableLiveData(LatLng(35.702, 51.3380464))//MutableStateFlow<LatLng>(LatLng(35.702, 51.3380464))
+    val currentLocation = MutableLiveData(LatLng(0.0, 0.0))//MutableStateFlow<LatLng>(LatLng(35.702, 51.3380464))
     var placeList =
             currentLocation.switchMap {
                 placeRepository.getPlacesNearLocation(it.latitude, it.longitude, viewModelScope, true)

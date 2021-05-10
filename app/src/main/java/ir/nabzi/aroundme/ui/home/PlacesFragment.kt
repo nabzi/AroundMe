@@ -30,6 +30,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.TransitionOptions
 import ir.nabzi.aroundme.R
 import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.MAP_ACCESS_TOKEN
+import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.requireLocationEnabled
 import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.showError
 import ir.nabzi.aroundme.model.Place
 import ir.nabzi.aroundme.model.Status
@@ -83,8 +84,8 @@ class PlacesFragment : Fragment() {
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
+        requireContext().requireLocationEnabled()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-
         Mapbox.getInstance(requireContext(), MAP_ACCESS_TOKEN)
         return inflater.inflate(R.layout.fragment_places, container, false)
     }
