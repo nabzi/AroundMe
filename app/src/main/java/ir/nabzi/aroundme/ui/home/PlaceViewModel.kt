@@ -1,18 +1,22 @@
 package ir.nabzi.aroundme.ui.home
 
-import android.location.Location
 import androidx.lifecycle.*
 import com.mapbox.mapboxsdk.geometry.LatLng
 import ir.nabzi.aroundme.data.repository.PlaceRepository
-import ir.nabzi.aroundme.model.Place
-import ir.nabzi.aroundme.model.Resource
-import kotlinx.coroutines.flow.*
 
-class PlaceViewModel(placeRepository: PlaceRepository) : ViewModel() {
-    val currentLocation = MutableLiveData(LatLng(0.0, 0.0))//MutableStateFlow<LatLng>(LatLng(35.702, 51.3380464))
+class PlaceViewModel(val placeRepository: PlaceRepository) : ViewModel() {
+    val currentLocation = MutableLiveData(LatLng(0.0, 0.0))
+    fun loadMorePlaces() {
+        page.value = page.value?.plus(1)
+        currentLocation.value?.let {
+            placeRepository.getPlacesNearLocation(it.latitude, it.longitude, viewModelScope, page.value ?: 1, true)
+        }
+    }
+
     var placeList =
             currentLocation.switchMap {
-                placeRepository.getPlacesNearLocation(it.latitude, it.longitude, viewModelScope, true)
+                page.postValue(1)
+                placeRepository.getPlacesNearLocation(it.latitude, it.longitude, viewModelScope, 1 , true)
                         .asLiveData()
             }
 
@@ -20,5 +24,6 @@ class PlaceViewModel(placeRepository: PlaceRepository) : ViewModel() {
     val place = selectedPlaceId.map { _id ->
         placeList.value?.data?.firstOrNull { it.id == _id }
     }
+    val page = MutableLiveData<Int>(0)
 
 }

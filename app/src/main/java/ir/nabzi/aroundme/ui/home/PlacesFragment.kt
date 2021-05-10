@@ -47,9 +47,20 @@ class PlacesFragment : Fragment() {
     val LOCATION_PERMISSION_REQUEST_CODE = 111
     private lateinit var adapter: PlaceAdapter
     val onLocationUpdated = { location: Location ->
-        Toast.makeText(requireContext(), "location updated" + location?.latitude + "," + location?.longitude, Toast.LENGTH_SHORT).show()
-        setCamera(location)
-        requestNearbyPlaces(location)
+        //TODO : refactor kotlin
+        vmodel.currentLocation.value?.let {
+            if (LatLng(location.latitude, location.longitude).distanceTo(it) > 100)
+            {
+                Toast.makeText(requireContext(), "location change" + location?.latitude + "," + location?.longitude, Toast.LENGTH_SHORT).show()
+                setCamera(location)
+                requestNearbyPlaces(location)
+            }
+        }
+        if(vmodel.currentLocation.value == null){
+            setCamera(location)
+            requestNearbyPlaces(location)
+        }
+
     }
 
     private fun requestNearbyPlaces(location: Location) {
@@ -105,6 +116,12 @@ class PlacesFragment : Fragment() {
                 Status.LOADING -> showProgress(true)
             }
         })
+        vmodel.page.observe(viewLifecycleOwner, Observer{
+            Toast.makeText(requireContext() , "page=" + it , Toast.LENGTH_SHORT).show()
+        })
+        vmodel.currentLocation.observe(viewLifecycleOwner , Observer {
+
+        })
     }
 
 
@@ -154,19 +171,16 @@ class PlacesFragment : Fragment() {
                 CameraUpdateFactory.newCameraPosition(position),
                 1000
         )
-        //todo : add places markers
-//        mapboxMap?.addMarker(
-//                MarkerOptions()
-//                        .position(LatLng(location.latitude, location.longitude)))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = object : PlaceAdapter(requireContext(), { id -> goToPlace(id) }) {
             override fun loadMore(lastItem: Place) {
-                //TODO("Not yet implemented")
-                Toast.makeText(requireContext(), "load more", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), "load more", Toast.LENGTH_SHORT).show()
+                vmodel.loadMorePlaces()
             }
         }
+
         rvPlace.adapter = adapter
         mapView.onCreate(savedInstanceState);
         subscribeUi()
