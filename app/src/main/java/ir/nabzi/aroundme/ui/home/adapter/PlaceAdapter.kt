@@ -10,9 +10,9 @@ import ir.nabzi.aroundme.R
 import ir.nabzi.aroundme.databinding.ItemPlaceLayoutBinding
 import ir.nabzi.aroundme.model.Place
 
-abstract class PlaceAdapter(val context: Context, val onItemClick: (String) -> Unit
-) :
-        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+abstract class PlaceAdapter( val onItemClick: (String) -> Unit
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
     var list: List<Place>? = null
     var isLoading = false
     var isMoreDataAvailable = true //todo
@@ -36,16 +36,6 @@ abstract class PlaceAdapter(val context: Context, val onItemClick: (String) -> U
     }
     override fun getItemCount(): Int {
         return list?.size ?: 0
-    }
-    companion object {
-        //This diff callback informs the PagedListAdapter how to compute list differences when new
-        private val diffCallback = object : DiffUtil.ItemCallback<Place>() {
-            override fun areItemsTheSame(oldItem: Place, newItem: Place): Boolean =
-                    oldItem === newItem
-
-            override fun areContentsTheSame(oldItem: Place, newItem: Place): Boolean =
-                    oldItem.id == newItem.id
-        }
     }
 
 

@@ -47,8 +47,8 @@ class PlacesFragment : Fragment() {
     val LOCATION_PERMISSION_REQUEST_CODE = 111
     private lateinit var adapter: PlaceAdapter
     val onLocationUpdated = { location: Location ->
-        vmodel.onLocationUpdateReceived(LatLng(location.latitude , location.longitude))
-        setCamera(LatLng(location.latitude , location.longitude))
+        vmodel.onLocationUpdateReceived(LatLng(location.latitude, location.longitude))
+        setCamera(LatLng(location.latitude, location.longitude))
     }
 
 
@@ -57,7 +57,6 @@ class PlacesFragment : Fragment() {
             locationResult ?: return
             for (location in locationResult.locations) {
                 onLocationUpdated(location)
-
             }
         }
     }
@@ -68,7 +67,8 @@ class PlacesFragment : Fragment() {
             grantResults: IntArray
     ) {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //permission granted
             }
         }
@@ -99,10 +99,10 @@ class PlacesFragment : Fragment() {
                 Status.LOADING -> showProgress(true)
             }
         })
-        vmodel.page.observe(viewLifecycleOwner, Observer{
-            Toast.makeText(requireContext() , "page=" + it , Toast.LENGTH_SHORT).show()
+        vmodel.page.observe(viewLifecycleOwner, Observer {
+            //Toast.makeText(requireContext(), "page=" + it, Toast.LENGTH_SHORT).show()
         })
-        vmodel.currentLocation.observe(viewLifecycleOwner , Observer {
+        vmodel.currentLocation.observe(viewLifecycleOwner, Observer {
             setCamera(it)
         })
     }
@@ -113,10 +113,13 @@ class PlacesFragment : Fragment() {
     }
 
     private fun showPlaces(places: List<Place>) {
-
-        adapter.list = places
-        adapter.isMoreDataAvailable = true
-        adapter.notifyDataChanged()
+        if(places.isEmpty())
+            return
+        adapter.apply {
+            list = places
+            isMoreDataAvailable = true
+            notifyDataChanged()
+        }
         initMap(places)
     }
 
@@ -128,23 +131,14 @@ class PlacesFragment : Fragment() {
             ) { style ->
                 style.transition = TransitionOptions(0, 0, false);
                 this.mapboxMap = mapboxMap
-//                setCamera(mapboxMap)
                 for (place in places)
                     mapboxMap.addMarker(
                             MarkerOptions()
                                     .position(LatLng(place.location_lat, place.location_lng))
                                     .title(place.id)
                     )
-                mapboxMap.setOnMarkerClickListener { it ->
-                    selectPlace(it.title)
-                    true
-                }
             }
         })
-    }
-
-    private fun selectPlace(title: String?) {
-
     }
 
     private fun setCamera(latLng: LatLng) {
@@ -160,13 +154,11 @@ class PlacesFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = object : PlaceAdapter(requireContext(), { id -> goToPlace(id) }) {
+        adapter = object : PlaceAdapter({ id -> goToPlace(id) }) {
             override fun loadMore(lastItem: Place?) {
-                //Toast.makeText(requireContext(), "load more", Toast.LENGTH_SHORT).show()
                 vmodel.loadMorePlaces()
             }
         }
-
         rvPlace.adapter = adapter
         mapView.onCreate(savedInstanceState);
         subscribeUi()
