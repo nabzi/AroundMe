@@ -46,11 +46,13 @@ class PlacesFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     val LOCATION_PERMISSION_REQUEST_CODE = 111
     private lateinit var adapter: PlaceAdapter
-    val onLocationUpdated = { location: Location ->
-        vmodel.onLocationUpdateReceived(LatLng(location.latitude, location.longitude))
-        setCamera(LatLng(location.latitude, location.longitude))
-    }
 
+    val onLocationUpdated = { location: Location ->
+        LatLng(location.latitude, location.longitude).run{
+            vmodel.onLocationUpdateReceived(this)
+            setCamera(this)
+        }
+    }
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult?) {
@@ -60,20 +62,6 @@ class PlacesFragment : Fragment() {
             }
         }
     }
-
-    override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String>,
-            grantResults: IntArray
-    ) {
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //permission granted
-            }
-        }
-    }
-
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
@@ -82,6 +70,11 @@ class PlacesFragment : Fragment() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         Mapbox.getInstance(requireContext(), MAP_ACCESS_TOKEN)
         return inflater.inflate(R.layout.fragment_places, container, false)
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        initAdapter()
+        mapView.onCreate(savedInstanceState);
+        subscribeUi()
     }
 
     private fun subscribeUi() {
@@ -152,7 +145,8 @@ class PlacesFragment : Fragment() {
         )
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+    private fun initAdapter() {
         adapter = object : PlaceAdapter({ id -> goToPlace(id) }) {
             override fun loadMore(lastItem: Place?) {
                 vmodel.loadMorePlaces()
@@ -162,8 +156,6 @@ class PlacesFragment : Fragment() {
         adapter.isLoading.observe(viewLifecycleOwner , Observer {
             showProgressLoadMore(it)
         })
-        mapView.onCreate(savedInstanceState);
-        subscribeUi()
     }
 
     fun goToPlace(id: String) {
@@ -207,6 +199,23 @@ class PlacesFragment : Fragment() {
 
     }
 
+    private fun stopLocationUpdates() {
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //permission granted
+            }
+        }
+    }
+
     override fun onStart() {
         super.onStart()
         mapView.onStart()
@@ -222,10 +231,6 @@ class PlacesFragment : Fragment() {
         super.onPause()
         mapView.onPause()
         stopLocationUpdates()
-    }
-
-    private fun stopLocationUpdates() {
-        fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
     override fun onStop() {
