@@ -18,8 +18,8 @@ interface PlaceRepository {
 }
 
 class PlaceRepositoryImpl(
-        val placeDao: PlaceDao,
-        val apiServices: ApiService
+    private val placeDao: PlaceDao,
+    val apiServices: ApiService
 ) : PlaceRepository {
     val PAGE_SIZE = 5
     override fun getPlacesNearLocation(lat: Double, lon: Double, coroutineScope: CoroutineScope, page : Int, shouldFetch: Boolean)

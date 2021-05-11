@@ -1,11 +1,9 @@
 package ir.nabzi.aroundme.ui.home.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ir.nabzi.aroundme.R
 import ir.nabzi.aroundme.databinding.ItemPlaceLayoutBinding
@@ -38,13 +36,13 @@ abstract class PlaceAdapter( val onItemClick: (String) -> Unit
     override fun getItemCount(): Int {
         return list?.size ?: 0
     }
-
-
     abstract fun loadMore(lastItem : Place?)
+
     fun notifyDataChanged() {
         notifyDataSetChanged()
         isLoading.value = false
     }
+
     inner class PlaceViewHolder(
             val binding: ItemPlaceLayoutBinding
     ) : RecyclerView.ViewHolder(binding.root) {
