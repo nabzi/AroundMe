@@ -6,10 +6,11 @@ import ir.nabzi.aroundme.data.repository.PlaceRepository
 
 class PlaceViewModel(val placeRepository: PlaceRepository) : ViewModel() {
     val currentLocation = MutableLiveData<LatLng>()//MutableStateFlow<LatLng>(LatLng(35.702, 51.3380464))
+    var  page = 1
     fun loadMorePlaces() {
-        page.value = page.value?.plus(1)
+        page++
         currentLocation.value?.let {
-            placeRepository.getPlacesNearLocation(it.latitude, it.longitude, viewModelScope, page.value ?: 1, true)
+            placeRepository.getPlacesNearLocation(it.latitude, it.longitude, viewModelScope, page, true)
         }
     }
 
@@ -22,7 +23,7 @@ class PlaceViewModel(val placeRepository: PlaceRepository) : ViewModel() {
 
     var placeList =
             currentLocation.switchMap {
-                page.postValue(1)
+                page = 1
                 placeRepository.getPlacesNearLocation(it.latitude, it.longitude, viewModelScope, 1 , true)
                         .asLiveData()
             }
@@ -31,6 +32,4 @@ class PlaceViewModel(val placeRepository: PlaceRepository) : ViewModel() {
     val place = selectedPlaceId.map { _id ->
         placeList.value?.data?.firstOrNull { it.id == _id }
     }
-    val page = MutableLiveData<Int>(0)
-
 }

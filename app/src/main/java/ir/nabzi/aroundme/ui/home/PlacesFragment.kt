@@ -99,9 +99,6 @@ class PlacesFragment : Fragment() {
                 Status.LOADING -> showProgress(true)
             }
         })
-        vmodel.page.observe(viewLifecycleOwner, Observer {
-            //Toast.makeText(requireContext(), "page=" + it, Toast.LENGTH_SHORT).show()
-        })
         vmodel.currentLocation.observe(viewLifecycleOwner, Observer {
             setCamera(it)
         })
