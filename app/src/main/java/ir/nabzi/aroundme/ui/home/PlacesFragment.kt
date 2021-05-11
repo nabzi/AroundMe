@@ -108,6 +108,9 @@ class PlacesFragment : Fragment() {
     private fun showProgress(show: Boolean) {
         progressBar.visibility = if (show) View.VISIBLE else View.GONE
     }
+    private fun showProgressLoadMore(show: Boolean) {
+        progressBarLoadMore.visibility = if (show) View.VISIBLE else View.INVISIBLE
+    }
 
     private fun showPlaces(places: List<Place>) {
         if(places.isEmpty())
@@ -141,7 +144,7 @@ class PlacesFragment : Fragment() {
     private fun setCamera(latLng: LatLng) {
         val position = CameraPosition.Builder()
                 .target(latLng)
-                .zoom(10.0)
+                .zoom(12.0)
                 .build()
         mapboxMap?.animateCamera(
                 CameraUpdateFactory.newCameraPosition(position),
@@ -157,7 +160,7 @@ class PlacesFragment : Fragment() {
         }
         rvPlace.adapter = adapter
         adapter.isLoading.observe(viewLifecycleOwner , Observer {
-            showProgress(it)
+            showProgressLoadMore(it)
         })
         mapView.onCreate(savedInstanceState);
         subscribeUi()
