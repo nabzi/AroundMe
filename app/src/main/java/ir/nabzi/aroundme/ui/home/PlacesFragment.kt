@@ -100,7 +100,6 @@ class PlacesFragment : Fragment() {
             }
         })
         vmodel.page.observe(viewLifecycleOwner, Observer {
-           showProgress(true)
             //Toast.makeText(requireContext(), "page=" + it, Toast.LENGTH_SHORT).show()
         })
         vmodel.currentLocation.observe(viewLifecycleOwner, Observer {
@@ -143,7 +142,6 @@ class PlacesFragment : Fragment() {
     }
 
     private fun setCamera(latLng: LatLng) {
-
         val position = CameraPosition.Builder()
                 .target(latLng)
                 .zoom(10.0)
@@ -161,6 +159,9 @@ class PlacesFragment : Fragment() {
             }
         }
         rvPlace.adapter = adapter
+        adapter.isLoading.observe(viewLifecycleOwner , Observer {
+            showProgress(it)
+        })
         mapView.onCreate(savedInstanceState);
         subscribeUi()
     }

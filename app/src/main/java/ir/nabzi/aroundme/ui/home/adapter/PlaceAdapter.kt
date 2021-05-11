@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ir.nabzi.aroundme.R
@@ -14,7 +15,7 @@ abstract class PlaceAdapter( val onItemClick: (String) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var list: List<Place>? = null
-    var isLoading = false
+    var isLoading = MutableLiveData(false)
     var isMoreDataAvailable = true //todo
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceViewHolder =
             PlaceViewHolder(
@@ -29,8 +30,8 @@ abstract class PlaceAdapter( val onItemClick: (String) -> Unit
         if (item != null) {
             (holder as PlaceViewHolder).bindTo(item);
         }
-        if ( position >= itemCount - 1 && isMoreDataAvailable && !isLoading) {
-            isLoading = true;
+        if ( position >= itemCount - 1 && isMoreDataAvailable && (isLoading.value == true).not()) {
+            isLoading.value = true;
             loadMore(item);
         }
     }
@@ -42,7 +43,7 @@ abstract class PlaceAdapter( val onItemClick: (String) -> Unit
     abstract fun loadMore(lastItem : Place?)
     fun notifyDataChanged() {
         notifyDataSetChanged()
-        isLoading = false
+        isLoading.value = false
     }
     inner class PlaceViewHolder(
             val binding: ItemPlaceLayoutBinding
