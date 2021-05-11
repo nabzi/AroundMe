@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ir.nabzi.aroundme.R
 import ir.nabzi.aroundme.databinding.ItemPlaceLayoutBinding
@@ -13,7 +12,10 @@ import ir.nabzi.aroundme.model.Place
 
 abstract class PlaceAdapter(val context: Context, val onItemClick: (String) -> Unit
 ) :
-        ListAdapter<Place, RecyclerView.ViewHolder>(diffCallback) {
+        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    var list: List<Place>? = null
+    var isLoading = false
+    var isMoreDataAvailable = true //todo
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceViewHolder =
             PlaceViewHolder(
                     DataBindingUtil.inflate(
@@ -23,14 +25,18 @@ abstract class PlaceAdapter(val context: Context, val onItemClick: (String) -> U
             )
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        var item = getItem(position)
+        var item = list?.get(position)
         if (item != null) {
             (holder as PlaceViewHolder).bindTo(item);
         }
-        if ((position >= itemCount - 1))
+        if ( position >= itemCount - 1 && isMoreDataAvailable && !isLoading) {
+            isLoading = true;
             loadMore(item);
+        }
     }
-
+    override fun getItemCount(): Int {
+        return list?.size ?: 0
+    }
     companion object {
         //This diff callback informs the PagedListAdapter how to compute list differences when new
         private val diffCallback = object : DiffUtil.ItemCallback<Place>() {
@@ -42,8 +48,12 @@ abstract class PlaceAdapter(val context: Context, val onItemClick: (String) -> U
         }
     }
 
-    abstract fun loadMore(lastItem : Place)
 
+    abstract fun loadMore(lastItem : Place?)
+    fun notifyDataChanged() {
+        notifyDataSetChanged()
+        isLoading = false
+    }
     inner class PlaceViewHolder(
             val binding: ItemPlaceLayoutBinding
     ) : RecyclerView.ViewHolder(binding.root) {

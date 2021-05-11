@@ -113,7 +113,10 @@ class PlacesFragment : Fragment() {
     }
 
     private fun showPlaces(places: List<Place>) {
-        adapter.submitList(places)
+
+        adapter.list = places
+        adapter.isMoreDataAvailable = true
+        adapter.notifyDataChanged()
         initMap(places)
     }
 
@@ -148,7 +151,7 @@ class PlacesFragment : Fragment() {
 
         val position = CameraPosition.Builder()
                 .target(latLng)
-                .zoom(15.0)
+                .zoom(10.0)
                 .build()
         mapboxMap?.animateCamera(
                 CameraUpdateFactory.newCameraPosition(position),
@@ -158,7 +161,7 @@ class PlacesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = object : PlaceAdapter(requireContext(), { id -> goToPlace(id) }) {
-            override fun loadMore(lastItem: Place) {
+            override fun loadMore(lastItem: Place?) {
                 //Toast.makeText(requireContext(), "load more", Toast.LENGTH_SHORT).show()
                 vmodel.loadMorePlaces()
             }
