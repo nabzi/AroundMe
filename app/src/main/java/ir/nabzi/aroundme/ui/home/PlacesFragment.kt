@@ -100,6 +100,7 @@ class PlacesFragment : Fragment() {
             }
         })
         vmodel.page.observe(viewLifecycleOwner, Observer {
+           showProgress(true)
             //Toast.makeText(requireContext(), "page=" + it, Toast.LENGTH_SHORT).show()
         })
         vmodel.currentLocation.observe(viewLifecycleOwner, Observer {
