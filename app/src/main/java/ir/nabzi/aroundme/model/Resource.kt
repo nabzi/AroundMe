@@ -26,7 +26,8 @@ data class Resource<out T>(
                 Status.ERROR,
                 data,
                 msg,
-                errorCode
+                errorCode,
+                false
             )
         }
 
@@ -34,7 +35,9 @@ data class Resource<out T>(
             return Resource(
                 Status.LOADING,
                 data,
-                null
+                null,
+                0,
+                false
             )
         }
     }

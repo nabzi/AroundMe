@@ -28,7 +28,7 @@ abstract class RemoteResource<ResultType> {
                     getFromDB().collect {
                         stateFlow.emit(
                             Resource.error<ResultType>(
-                                resource.message ?: "error loading from server", it
+                                resource.message ?: "error loading from server", it , resource.errorCode
                             )
                         )
                     }
@@ -47,7 +47,7 @@ abstract class RemoteResource<ResultType> {
             } else {
                 getFromDB().collect {
                     stateFlow.emit(
-                        Resource.success(it)
+                        Resource(Status.SUCCESS , it,null,0 , false)
                     )
                 }
             }
