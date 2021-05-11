@@ -2,6 +2,7 @@ package ir.nabzi.aroundme.data.repository
 
 import ir.nabzi.aroundme.data.db.PlaceDao
 import ir.nabzi.aroundme.data.remote.ApiService
+import ir.nabzi.aroundme.data.repository.PlaceRepositoryImpl.Companion.PAGE_SIZE
 import ir.nabzi.aroundme.model.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -18,70 +19,67 @@ interface PlaceRepository {
 }
 
 class PlaceRepositoryImpl(
-    private val placeDao: PlaceDao,
-    val apiServices: ApiService
+    private val dbDataSource     : PlaceDBDataSource,
+    private val remoteDataSource : PlaceRemoteDataSource
 ) : PlaceRepository {
-    val PAGE_SIZE = 5
+    companion object {
+        val PAGE_SIZE = 5
+    }
     override fun getPlacesNearLocation(lat: Double, lon: Double, coroutineScope: CoroutineScope, page : Int, shouldFetch: Boolean)
             : StateFlow<Resource<List<Place>>?> {
         return object : RemoteResource<List<Place>>() {
             override suspend fun updateDB(result: List<Place>) {
                 if(page == 1  )
-                    clearDB()
-                updateDBSource(result)
+                    dbDataSource.clear()
+                dbDataSource.update(result)
             }
 
             override fun getFromDB(): Flow<List<Place>> {
-                return getPlacesFromDBSource()
+                return dbDataSource.getPlaces()
             }
 
             override suspend fun pullFromServer(): Resource<List<Place>> {
-                return getPlacesFromRemoteSource(lat, lon , page)
+                return remoteDataSource.getPlacesFromRemoteSource(lat, lon , page)
             }
         }.get(coroutineScope, true)
     }
+}
 
-    /**Data Sources:
-     * This functions can be placed in classes
-     * PlaceDBSource and PlaceRemoteSource if they are large
-     * and added as dependency for repository
-     **/
-    private suspend fun updateDBSource(result: List<Place>) {
+class PlaceDBDataSource(private val placeDao: PlaceDao){
+     suspend fun update(result: List<Place>) {
         placeDao.addList(result)
     }
-
-    private suspend fun clearDB(){
+     suspend fun clear(){
         placeDao.removeAll()
     }
-
-    private fun getPlacesFromDBSource(): Flow<List<Place>> {
+     fun getPlaces(): Flow<List<Place>> {
         return placeDao.getPlacesFlow()
     }
+}
 
-    private suspend fun getPlacesFromRemoteSource(lat: Double, lon: Double , page : Int): Resource<List<Place>> {
+class PlaceRemoteDataSource(val apiServices: ApiService){
+    suspend fun getPlacesFromRemoteSource(lat: Double, lon: Double , page : Int): Resource<List<Place>> {
         val res = object : NetworkCall<NearbySearchResponse>() {
             override suspend fun createCall(): Response<NearbySearchResponse> {
                 return apiServices.getPlaceList(lat, lon , PAGE_SIZE ,(page - 1) * PAGE_SIZE)
             }
         }.fetch()
         return Resource(res.status,
-                res.data?.results?.map { pointResponseToPlace(it) }, res.message, res.errorCode)
+            res.data?.results?.map { pointResponseToPlace(it) }, res.message, res.errorCode)
     }
-
     private fun pointResponseToPlace(pointResponse: PointResponse): Place {
         pointResponse.run {
             return Place(
-                    id,
-                    poi.name,
-                    null,
-                    getImageUrl(poi.classifications[0].code ),
-                    score.toInt(),
-                    position.lat,
-                    position.lon
+                id,
+                poi.name,
+                null,
+                getImageUrl(poi.classifications[0].code ),
+                score.toInt(),
+                position.lat,
+                position.lon
             )
         }
     }
-
     private fun getImageUrl(code: String): String? {
         return when(code){
             "SCHOOL" ->  "http://riyainfosystems.com/wp-content/uploads/2019/06/5b76b45cbb3a6.jpg"
