@@ -19,3 +19,8 @@ data class Place
         val location_lat: Double,
         val location_lng: Double
 ) : Parcelable
+
+//data class Places (
+//        val list        : ArrayList<Place>,
+//        var hasMorePages: Boolean
+//)

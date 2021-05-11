@@ -9,7 +9,8 @@ data class Resource<out T>(
     val status: Status,
     val data: T?,
     val message: String?,
-    val errorCode: Int? = 0
+    val errorCode: Int? = 0,
+    val hasMore : Boolean? = false
 ) {
     companion object {
         fun <T> success(data: T?): Resource<T> {

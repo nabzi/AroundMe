@@ -95,6 +95,12 @@ class PlacesFragment : Fragment() {
         vmodel.currentLocation.observe(viewLifecycleOwner, Observer {
             setCamera(it)
         })
+
+        vmodel.hasMorePages.observe(viewLifecycleOwner , Observer {
+            adapter.isMoreDataAvailable = it ?: true
+            if(it == false)
+                Toast.makeText(requireContext() , "hasMore = " + it , Toast.LENGTH_SHORT).show()
+        })
     }
 
 
