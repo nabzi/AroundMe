@@ -46,7 +46,7 @@ class PlaceRepositoryImpl(
             }
 
             override suspend fun pullFromServer(): Resource<List<Place>> {
-                return remoteDataSource.getPlacesFromRemoteSource(lat, lon, page)
+                return remoteDataSource.getPlaces(lat, lon, page)
             }
         }.get(coroutineScope, true)
     }
@@ -67,17 +67,14 @@ class PlaceDBDataSource(private val placeDao: PlaceDao) {
 }
 
 class PlaceRemoteDataSource(val apiServices: ApiService) {
-    suspend fun getPlacesFromRemoteSource(lat: Double, lon: Double, page: Int): Resource<List<Place>> {
+    suspend fun getPlaces(lat: Double, lon: Double, page: Int): Resource<List<Place>> {
         val res = object : NetworkCall<NearbySearchResponse>() {
             override suspend fun createCall(): Response<NearbySearchResponse> {
                 return apiServices.getPlaceList(lat, lon, PAGE_SIZE, (page - 1) * PAGE_SIZE)
             }
         }.fetch()
         var result = res.data?.let { pointResponseToPlaces(it) }
-        return Resource(
-            res.status,
-           result?.first, res.message, res.errorCode , result?.second
-        )
+        return Resource( res.status, result?.first, res.message, res.errorCode , result?.second )
     }
 
     private fun pointResponseToPlaces(nearbySearchResponse: NearbySearchResponse): Pair<List<Place>, Boolean> {
@@ -94,7 +91,7 @@ class PlaceRemoteDataSource(val apiServices: ApiService) {
                 )
             }
         }, nearbySearchResponse.summary.let {
-            it.offset <= it.totalResults - PAGE_SIZE
+            it.offset < it.totalResults - PAGE_SIZE
         })
 
     }
