@@ -6,6 +6,7 @@ import ir.nabzi.aroundme.data.repository.PlaceRemoteDataSource
 import ir.nabzi.aroundme.data.repository.PlaceRepository
 import ir.nabzi.aroundme.data.repository.PlaceRepositoryImpl
 import ir.nabzi.aroundme.ui.home.PlaceViewModel
+import ir.nabzi.aroundme.util.SharedPrefHelper
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -23,4 +24,6 @@ val appModule = module {
 
     //Viewmodel
     viewModel { PlaceViewModel(get() , get()) }
+
+    single { SharedPrefHelper (get())}
 }

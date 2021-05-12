@@ -4,17 +4,15 @@ import android.content.Context
 import androidx.lifecycle.*
 import com.mapbox.mapboxsdk.geometry.LatLng
 import ir.nabzi.aroundme.data.repository.PlaceRepository
-import ir.nabzi.aroundme.ui.getLastLocation
-import ir.nabzi.aroundme.ui.saveLocation
+import ir.nabzi.aroundme.util.SharedPrefHelper
 
-class PlaceViewModel(private val placeRepository: PlaceRepository ,
-                     private val applicationContext: Context) : ViewModel() {
+class PlaceViewModel(private val placeRepository: PlaceRepository, private val sharedPrefHelper : SharedPrefHelper) : ViewModel(){
 
     var  currentLocation : MutableLiveData<LatLng> = MutableLiveData()
     val  selectedPlaceId = MutableLiveData<String>()
     private var  page = 1
     val MIN_LOCATION_CHANGE = 100
-    var lastLocation = applicationContext.getLastLocation()
+    var lastLocation = sharedPrefHelper.getLastLocation()
 
     var placeList = currentLocation.switchMap {
             page = 1
@@ -43,7 +41,7 @@ class PlaceViewModel(private val placeRepository: PlaceRepository ,
     fun onLocationReceived(latLng: LatLng) {
         currentLocation.value.let {
             it?.let {
-                applicationContext.saveLocation(it)
+                sharedPrefHelper.saveLocation(it)
             }
             if ( it == null || (latLng.distanceTo(it) > MIN_LOCATION_CHANGE)) {
                 currentLocation.postValue(latLng)
