@@ -12,11 +12,12 @@ class PlaceViewModel(private val placeRepository: PlaceRepository ,
     var lastLocation = applicationContext.getLastLocation()
     var  currentLocation : MutableLiveData<LatLng> = MutableLiveData()
     private var  page = 1
+    val MIN_LOCATION_CHANGE = 100
     var placeList =
         currentLocation.switchMap {
             page = 1
             placeRepository.getPlacesNearLocation(it.latitude, it.longitude, viewModelScope, 1 ,
-                lastLocation.distanceTo(it) > 100)
+                lastLocation.distanceTo(it) > MIN_LOCATION_CHANGE)
                     .asLiveData()
         }
     var hasMorePages = placeList.map {
@@ -40,7 +41,7 @@ class PlaceViewModel(private val placeRepository: PlaceRepository ,
             it?.let {
                 applicationContext.saveLocation(it)
             }
-            if ( it == null || (latLng.distanceTo(it) > 100)) {
+            if ( it == null || (latLng.distanceTo(it) > MIN_LOCATION_CHANGE)) {
                 currentLocation.postValue(latLng)
 
             }
