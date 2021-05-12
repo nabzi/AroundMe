@@ -4,29 +4,33 @@ import android.content.Context
 import androidx.lifecycle.*
 import com.mapbox.mapboxsdk.geometry.LatLng
 import ir.nabzi.aroundme.data.repository.PlaceRepository
-import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.getLastLocation
-import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.saveLocation
+import ir.nabzi.aroundme.ui.getLastLocation
+import ir.nabzi.aroundme.ui.saveLocation
 
 class PlaceViewModel(private val placeRepository: PlaceRepository ,
                      private val applicationContext: Context) : ViewModel() {
-    var lastLocation = applicationContext.getLastLocation()
+
     var  currentLocation : MutableLiveData<LatLng> = MutableLiveData()
+    val  selectedPlaceId = MutableLiveData<String>()
     private var  page = 1
     val MIN_LOCATION_CHANGE = 100
-    var placeList =
-        currentLocation.switchMap {
+    var lastLocation = applicationContext.getLastLocation()
+
+    var placeList = currentLocation.switchMap {
             page = 1
             placeRepository.getPlacesNearLocation(it.latitude, it.longitude, viewModelScope, 1 ,
                 lastLocation.distanceTo(it) > MIN_LOCATION_CHANGE)
                     .asLiveData()
-        }
+    }
+
     var hasMorePages = placeList.map {
         it?.hasMore
     }
-    val selectedPlaceId = MutableLiveData<String>()
+
     val place = selectedPlaceId.map { _id ->
         placeList.value?.data?.firstOrNull { it.id == _id }
     }
+
     fun loadMorePlaces() {
         if(hasMorePages.value == false)
             return

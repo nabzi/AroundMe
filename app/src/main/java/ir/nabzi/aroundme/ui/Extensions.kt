@@ -1,4 +1,4 @@
-package ir.nabzi.aroundme.ir.nabzi.aroundme.ui
+package ir.nabzi.aroundme.ui
 
 import android.app.AlertDialog
 import android.content.Context
@@ -14,6 +14,7 @@ fun Fragment.showError(message: String?) {
     Toast.makeText(requireContext(), message ?: "error", Toast.LENGTH_SHORT).show()
 }
 
+/*** Check location service enabled */
 fun Context.requireLocationEnabled() {
     if (!locationEnabled())
         AlertDialog.Builder(this)
@@ -28,9 +29,12 @@ fun Context.locationEnabled(): Boolean {
     val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
     return LocationManagerCompat.isLocationEnabled(locationManager)
 }
+
+/*** SAVE / LOAD last location in shared preferences*/
 const val SHARED_PREF = "aroundme"
 const val LAT = "lat"
 const val LON = "lon"
+
 fun Context.saveLocation(latLng: LatLng){
     val sharedPref = getSharedPreferences( SHARED_PREF,Context.MODE_PRIVATE ) ?: return
     with (sharedPref.edit()) {

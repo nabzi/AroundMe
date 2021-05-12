@@ -14,8 +14,7 @@ import kotlinx.coroutines.launch
 *   RemoteResource<ResultType> is an abstract class that can be used for resources that can be fetched
  *   from remote server or database.
  *   If parameter "shouldFetch" is set to true, we always fetch data from server and update database,
- *   and it can be set to "data == nullOrEmpty()" if we want to load data from remote server if
- *   data is not present in database yet.
+ *   and we can use it for  fetching data conditionally
 * */
 abstract class RemoteResource<ResultType> {
     fun get(coroutineScope: CoroutineScope, shouldFetch : Boolean): StateFlow<Resource<ResultType>> {

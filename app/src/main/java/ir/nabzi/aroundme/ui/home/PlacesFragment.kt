@@ -26,19 +26,20 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.TransitionOptions
 import ir.nabzi.aroundme.R
 import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.MAP_ACCESS_TOKEN
-import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.requireLocationEnabled
-import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.showError
 import ir.nabzi.aroundme.model.Place
 import ir.nabzi.aroundme.model.Status
 import ir.nabzi.aroundme.ui.home.adapter.PlaceAdapter
+import ir.nabzi.aroundme.ui.requireLocationEnabled
+import ir.nabzi.aroundme.ui.showError
 import kotlinx.android.synthetic.main.fragment_places.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 
 class PlacesFragment : Fragment() {
+    val LOCATION_PERMISSION_REQUEST_CODE = 111
     private val vmodel: PlaceViewModel by sharedViewModel()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    val LOCATION_PERMISSION_REQUEST_CODE = 111
+    private var mapboxMap: MapboxMap? = null
     private lateinit var adapter: PlaceAdapter
 
     val onLocationUpdated = { location: Location ->
@@ -65,6 +66,7 @@ class PlacesFragment : Fragment() {
         Mapbox.getInstance(requireContext(), MAP_ACCESS_TOKEN)
         return inflater.inflate(R.layout.fragment_places, container, false)
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initAdapter()
         mapView.onCreate(savedInstanceState);
@@ -92,8 +94,6 @@ class PlacesFragment : Fragment() {
 
         vmodel.hasMorePages.observe(viewLifecycleOwner , Observer {
             adapter.isMoreDataAvailable = it ?: true
-            if(it == false)
-                Toast.makeText(requireContext() , "hasMore = " + it , Toast.LENGTH_SHORT).show()
         })
     }
 
@@ -101,6 +101,7 @@ class PlacesFragment : Fragment() {
     private fun showProgress(show: Boolean) {
         progressBar.visibility = if (show) View.VISIBLE else View.GONE
     }
+
     private fun showProgressLoadMore(show: Boolean) {
         progressBarLoadMore.visibility = if (show) View.VISIBLE else View.INVISIBLE
     }
@@ -115,36 +116,6 @@ class PlacesFragment : Fragment() {
         }
         initMap(places)
     }
-
-    var mapboxMap: MapboxMap? = null
-    private fun initMap(places: List<Place>) {
-        mapView.getMapAsync(OnMapReadyCallback { mapboxMap ->
-            mapboxMap.setStyle(
-                    Style.MAPBOX_STREETS
-            ) { style ->
-                style.transition = TransitionOptions(0, 0, false);
-                this.mapboxMap = mapboxMap
-                for (place in places)
-                    mapboxMap.addMarker(
-                            MarkerOptions()
-                                    .position(LatLng(place.location_lat, place.location_lng))
-                                    .title(place.id)
-                    )
-            }
-        })
-    }
-
-    private fun setCamera(latLng: LatLng) {
-        val position = CameraPosition.Builder()
-                .target(latLng)
-                .zoom(12.0)
-                .build()
-        mapboxMap?.animateCamera(
-                CameraUpdateFactory.newCameraPosition(position),
-                1000
-        )
-    }
-
 
     private fun initAdapter() {
         adapter = object : PlaceAdapter({ id -> goToPlace(id) }) {
@@ -164,8 +135,19 @@ class PlacesFragment : Fragment() {
                 PlacesFragmentDirections.actionPlacesFragmentToPlaceDetailsFragment()
         )
     }
-
-
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //permission granted
+            }
+        }
+    }
+    /** Location update functions*/
     private fun startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(
                         requireContext(),
@@ -203,18 +185,37 @@ class PlacesFragment : Fragment() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //permission granted
+
+
+    /** Map functions */
+    private fun initMap(places: List<Place>) {
+        mapView.getMapAsync(OnMapReadyCallback { mapboxMap ->
+            mapboxMap.setStyle(
+                Style.MAPBOX_STREETS
+            ) { style ->
+                style.transition = TransitionOptions(0, 0, false);
+                this.mapboxMap = mapboxMap
+                for (place in places)
+                    mapboxMap.addMarker(
+                        MarkerOptions()
+                            .position(LatLng(place.location_lat, place.location_lng))
+                            .title(place.id)
+                    )
             }
-        }
+        })
     }
+
+    private fun setCamera(latLng: LatLng) {
+        val position = CameraPosition.Builder()
+            .target(latLng)
+            .zoom(12.0)
+            .build()
+        mapboxMap?.animateCamera(
+            CameraUpdateFactory.newCameraPosition(position),
+            1000
+        )
+    }
+
 
     override fun onStart() {
         super.onStart()
