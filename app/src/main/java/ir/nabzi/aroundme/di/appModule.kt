@@ -22,5 +22,5 @@ val appModule = module {
     single<PlaceDBDataSource> { PlaceDBDataSource(get()) }
 
     //Viewmodel
-    viewModel { PlaceViewModel(get()) }
+    viewModel { PlaceViewModel(get() , get()) }
 }

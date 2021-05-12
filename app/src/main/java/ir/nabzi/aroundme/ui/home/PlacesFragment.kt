@@ -1,7 +1,6 @@
 package ir.nabzi.aroundme.ui.home
 
 import android.Manifest
-import android.content.ClipData.Item
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -14,9 +13,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.whenStarted
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.*
 import com.mapbox.mapboxsdk.Mapbox
@@ -36,8 +32,6 @@ import ir.nabzi.aroundme.model.Place
 import ir.nabzi.aroundme.model.Status
 import ir.nabzi.aroundme.ui.home.adapter.PlaceAdapter
 import kotlinx.android.synthetic.main.fragment_places.*
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 
@@ -49,7 +43,7 @@ class PlacesFragment : Fragment() {
 
     val onLocationUpdated = { location: Location ->
         LatLng(location.latitude, location.longitude).run{
-            vmodel.onLocationUpdateReceived(this)
+            vmodel.onLocationReceived(this)
             setCamera(this)
         }
     }

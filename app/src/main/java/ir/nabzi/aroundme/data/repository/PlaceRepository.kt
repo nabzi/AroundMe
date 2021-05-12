@@ -48,7 +48,7 @@ class PlaceRepositoryImpl(
             override suspend fun pullFromServer(): Resource<List<Place>> {
                 return remoteDataSource.getPlaces(lat, lon, page)
             }
-        }.get(coroutineScope, true)
+        }.get(coroutineScope, shouldFetch)
     }
 }
 

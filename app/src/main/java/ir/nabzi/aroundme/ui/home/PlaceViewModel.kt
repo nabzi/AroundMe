@@ -1,17 +1,22 @@
 package ir.nabzi.aroundme.ui.home
 
+import android.content.Context
 import androidx.lifecycle.*
 import com.mapbox.mapboxsdk.geometry.LatLng
 import ir.nabzi.aroundme.data.repository.PlaceRepository
+import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.getLastLocation
+import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.saveLocation
 
-class PlaceViewModel(private val placeRepository: PlaceRepository) : ViewModel() {
-    val currentLocation = MutableLiveData<LatLng>()
+class PlaceViewModel(private val placeRepository: PlaceRepository ,
+                     private val applicationContext: Context) : ViewModel() {
+    var lastLocation = applicationContext.getLastLocation()
+    var  currentLocation : MutableLiveData<LatLng> = MutableLiveData()
     private var  page = 1
-
     var placeList =
         currentLocation.switchMap {
             page = 1
-            placeRepository.getPlacesNearLocation(it.latitude, it.longitude, viewModelScope, 1 , true)
+            placeRepository.getPlacesNearLocation(it.latitude, it.longitude, viewModelScope, 1 ,
+                lastLocation.distanceTo(it) > 100)
                     .asLiveData()
         }
     var hasMorePages = placeList.map {
@@ -30,10 +35,15 @@ class PlaceViewModel(private val placeRepository: PlaceRepository) : ViewModel()
         }
     }
 
-    fun onLocationUpdateReceived(latLng: LatLng) {
+    fun onLocationReceived(latLng: LatLng) {
         currentLocation.value.let {
-            if ( it == null || (latLng.distanceTo(it) > 100))
+            it?.let {
+                applicationContext.saveLocation(it)
+            }
+            if ( it == null || (latLng.distanceTo(it) > 100)) {
                 currentLocation.postValue(latLng)
+
+            }
         }
     }
 }

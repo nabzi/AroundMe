@@ -47,7 +47,7 @@ abstract class RemoteResource<ResultType> {
             } else {
                 getFromDB().collect {
                     stateFlow.emit(
-                        Resource(Status.SUCCESS , it,null,0 , false)
+                        Resource(Status.SUCCESS , it,null,0 , true)
                     )
                 }
             }

@@ -1,6 +1,5 @@
 package ir.nabzi.aroundme.ir.nabzi.aroundme.ui
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -29,16 +28,19 @@ fun Context.locationEnabled(): Boolean {
     val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
     return LocationManagerCompat.isLocationEnabled(locationManager)
 }
-fun Activity.saveLocation(latLng: LatLng){
-    val sharedPref = getPreferences(Context.MODE_PRIVATE) ?: return
+const val SHARED_PREF = "aroundme"
+const val LAT = "lat"
+const val LON = "lon"
+fun Context.saveLocation(latLng: LatLng){
+    val sharedPref = getSharedPreferences( SHARED_PREF,Context.MODE_PRIVATE ) ?: return
     with (sharedPref.edit()) {
-        putFloat("lat", latLng.latitude.toFloat())
-        putFloat("lon", latLng.longitude.toFloat())
+        putFloat(LAT, latLng.latitude.toFloat())
+        putFloat(LON, latLng.longitude.toFloat())
         apply()
     }
 }
 
-fun Activity.getLastLocation(): LatLng? {
-    val sharedPref = getPreferences(Context.MODE_PRIVATE) ?: return null
-    return  LatLng(sharedPref.getFloat("lat", 0f).toDouble() , sharedPref.getFloat("lon", 0f).toDouble())
+fun Context.getLastLocation(): LatLng {
+    val sharedPref = getSharedPreferences(SHARED_PREF,Context.MODE_PRIVATE) ?: return LatLng(0.0,0.0)
+    return  LatLng(sharedPref.getFloat(LAT, 0f).toDouble() , sharedPref.getFloat(LON, 0f).toDouble())
 }
