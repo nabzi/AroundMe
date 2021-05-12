@@ -57,10 +57,10 @@ abstract class NetworkCall<ResultType> {
     abstract suspend fun createCall(): Response<ResultType>
     open suspend fun onSuccess(result: ResultType?){}
     companion object{
-        final const val ConnectException=600
-        final const val SocketTimeoutException=601
-        final const val UnknownHostException=602
-        final const val Exception=603
-        final const val JSONException=604
+         const val ConnectException=600
+         const val SocketTimeoutException=601
+         const val UnknownHostException=602
+         const val Exception=603
+         const val JSONException=604
     }
 }

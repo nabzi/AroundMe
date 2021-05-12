@@ -13,17 +13,17 @@ import org.koin.dsl.module
 
 
 val appModule = module {
-    single { Gson() }
+    single                  { Gson()                            }
 
     //Repository
     single<PlaceRepository> { PlaceRepositoryImpl(get(), get()) }
 
     //DataSource
-    single<PlaceRemoteDataSource> { PlaceRemoteDataSource(get()) }
-    single<PlaceDBDataSource> { PlaceDBDataSource(get()) }
+    single                  { PlaceRemoteDataSource(get())      }
+    single                  { PlaceDBDataSource(get())          }
 
     //Viewmodel
-    viewModel { PlaceViewModel(get() , get()) }
+    viewModel               { PlaceViewModel(get() , get())     }
 
-    single { SharedPrefHelper (get())}
+    single                  { SharedPrefHelper (get())          }
 }

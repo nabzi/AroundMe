@@ -20,8 +20,5 @@ class App : Application() {
                 )
             )
         }
-//        if(BuildConfig.DEBUG) {
-//            Stetho.initializeWithDefaults(this)
-//        }
     }
 }

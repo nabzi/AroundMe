@@ -1,4 +1,4 @@
-package ir.nabzi.aroundme.ir.nabzi.aroundme.ui
+package ir.nabzi.aroundme.ui
 
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter

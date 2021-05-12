@@ -5,19 +5,17 @@ import kotlinx.android.parcel.Parcelize
 import java.net.Inet4Address
 
 data class NearbySearchResponse(
-        val summary         : NearbySearchSummaryResponse,
-        val results         : List<PointResponse>
+    val summary         : NearbySearchSummaryResponse,
+    val results         : List<PointResponse>
 )
+
 data class NearbySearchSummaryResponse(
-        val queryType       : String,
-        val queryTime       : Int,
-        val numResults      : Int,
-        val offset          : Int,
-        val totalResults    : Int,
+    val queryType       : String,
+    val queryTime       : Int,
+    val numResults      : Int,
+    val offset          : Int,
+    val totalResults    : Int,
 )
-/**
- * summary":{"queryType":"NEARBY","queryTime":26,"numResults":10,"offset":0,"totalResults":95,"fuzzyLevel":1,"geoBias":{"lat":35.702,"lon":51.3380464}},"results"
- * */
 
 data class PointResponse(
     val id          : String,
@@ -29,15 +27,28 @@ data class PointResponse(
 )
 
 data class PoiResponse(
-        val name            : String ,
-        val phone           : String,
-        val url             : String?,
-        val classifications : List<ClassificationsResponse>
+    val name            : String ,
+    val phone           : String,
+    val url             : String?,
+    val classifications : List<ClassificationsResponse>
 )
 
 data class ClassificationsResponse(
-        val code : String
+    val code : String
 )
+
+data class AddressResponse(
+    val streetName : String
+)
+
+data class LocationResponse(
+    val lat     : Double,
+    val lon     : Double)
+
+/**
+ * summary":{"queryType":"NEARBY","queryTime":26,"numResults":10,"offset":0,"totalResults":95,"fuzzyLevel":1,"geoBias":{"lat":35.702,"lon":51.3380464}},"results"
+ * */
+
 /**
  * "classifications": [
 {
@@ -51,9 +62,8 @@ data class ClassificationsResponse(
 }
 ]
  * */
-data class AddressResponse(
-        val streetName : String
-)
+
+
 /**
  * "address": {
 "streetNumber": "25",
@@ -73,9 +83,6 @@ data class AddressResponse(
 },
  * */
 
-data class LocationResponse(
-        val lat     : Double,
-        val lon     : Double)
 
 /**
  * {
