@@ -1,9 +1,9 @@
 # AroundMe
 
-AroundMe application browses nearby places using TomTom api.
+AroundMe android application browses nearby places using TomTom api.
 This is a location based sample application demonstrating use of following components and technics:
 
-- MVVM architecture 
+- MVVM architecture using Room, ViewModel,Livedata and databinding with kotlin coroutines
 - FusedLocationService to get user location with minimum resource usage
 - StateFlow and Livedata in repository and ui layers
 - Room for data persistence to show data when offline
