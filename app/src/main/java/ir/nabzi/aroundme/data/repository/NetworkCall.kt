@@ -1,5 +1,7 @@
-package ir.nabzi.aroundme.model
+package ir.nabzi.aroundme.data.repository
+import ir.nabzi.aroundme.model.Resource
 import ir.nabzi.aroundme.model.Resource.Companion.error
+import ir.nabzi.aroundme.model.Status
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.HttpException
@@ -18,7 +20,11 @@ abstract class NetworkCall<ResultType> {
             val response = createCall()
             if (response.isSuccessful) {
                 onSuccess(response.body())
-                Resource(Status.SUCCESS, response.body(),"success")
+                Resource(
+                    Status.SUCCESS,
+                    response.body(),
+                    "success"
+                )
 
             } else{
                 val errorMsg = response.errorBody()?.let {
@@ -34,23 +40,33 @@ abstract class NetworkCall<ResultType> {
 
         } catch (e: ConnectException) {
             e.printStackTrace()
-            error("Network Connection error",null, ConnectException)
+            error("Network Connection error",null,
+                ConnectException
+            )
 
         } catch (e: SocketTimeoutException) {
             e.printStackTrace()
-            error( "Network Connection error",null, SocketTimeoutException)
+            error( "Network Connection error",null,
+                SocketTimeoutException
+            )
 
         }catch (e : UnknownHostException){
             e.printStackTrace()
-            error("Network Connection error",null, UnknownHostException)
+            error("Network Connection error",null,
+                UnknownHostException
+            )
 
         }catch (e : JSONException){
             e.printStackTrace()
-            error("JSONException",null, JSONException)
+            error("JSONException",null,
+                JSONException
+            )
 
         } catch (e: Exception) {
             e.printStackTrace()
-            error(e.message.toString(),null, Exception)
+            error(e.message.toString(),null,
+                Exception
+            )
         }
     }
 

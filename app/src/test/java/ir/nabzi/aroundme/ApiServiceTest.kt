@@ -1,6 +1,7 @@
 package ir.nabzi.aroundme
 
 import ir.nabzi.aroundme.data.remote.*
+import ir.nabzi.aroundme.data.repository.NetworkCall
 import ir.nabzi.aroundme.model.*
 import kotlinx.coroutines.runBlocking
 import org.junit.Before

@@ -31,20 +31,9 @@ abstract class DB : RoomDatabase() {
                     context.applicationContext,
                     DB::class.java, "AppDatabase"
                 )
-//                    .addCallback(object : RoomDatabase.Callback() {
-//                        override fun onCreate(db: SupportSQLiteDatabase) {
-//                            fillInDb(context.applicationContext)
-//                        }
-//                    })
                     .build()
             }
             return instance!!
         }
-
-//        private fun fillInDb(context: Context) {
-//            GlobalScope.launch {
-//
-//            }
-//        }
     }
 }
