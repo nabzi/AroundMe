@@ -1,14 +1,17 @@
 package ir.nabzi.aroundme.ui.home
 
 import android.Manifest
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.fragment.app.Fragment
@@ -28,6 +31,7 @@ import ir.nabzi.aroundme.R
 import ir.nabzi.aroundme.ir.nabzi.aroundme.ui.MAP_ACCESS_TOKEN
 import ir.nabzi.aroundme.model.Place
 import ir.nabzi.aroundme.model.Status
+import ir.nabzi.aroundme.ui.LocationBasedFragment
 import ir.nabzi.aroundme.ui.home.adapter.PlaceAdapter
 import ir.nabzi.aroundme.ui.requireLocationEnabled
 import ir.nabzi.aroundme.ui.showError
@@ -35,7 +39,7 @@ import kotlinx.android.synthetic.main.fragment_places.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 
-class PlacesFragment : Fragment() {
+class PlacesFragment : LocationBasedFragment() {
     val LOCATION_PERMISSION_REQUEST_CODE = 111
     private val vmodel: PlaceViewModel by sharedViewModel()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -57,11 +61,19 @@ class PlacesFragment : Fragment() {
             }
         }
     }
+
+    override fun locationEnabled() {
+        tvGpsStatus.visibility = View.GONE
+    }
+
+    override fun locationDisabled() {
+        tvGpsStatus.visibility = View.VISIBLE
+    }
+
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
-        requireContext().requireLocationEnabled()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         Mapbox.getInstance(requireContext(), MAP_ACCESS_TOKEN)
         return inflater.inflate(R.layout.fragment_places, container, false)
@@ -71,6 +83,7 @@ class PlacesFragment : Fragment() {
         initAdapter()
         mapView.onCreate(savedInstanceState);
         subscribeUi()
+        checkGPS()
     }
 
     private fun subscribeUi() {
@@ -92,7 +105,7 @@ class PlacesFragment : Fragment() {
             setCamera(it)
         })
 
-        vmodel.hasMorePages.observe(viewLifecycleOwner , Observer {
+        vmodel.hasMorePages.observe(viewLifecycleOwner, Observer {
             adapter.isMoreDataAvailable = it ?: true
         })
     }
@@ -124,7 +137,7 @@ class PlacesFragment : Fragment() {
             }
         }
         rvPlace.adapter = adapter
-        adapter.isLoading.observe(viewLifecycleOwner , Observer {
+        adapter.isLoading.observe(viewLifecycleOwner, Observer {
             showProgressLoadMore(it)
         })
     }
@@ -132,7 +145,7 @@ class PlacesFragment : Fragment() {
     fun goToPlace(id: String) {
         vmodel.selectedPlaceId.postValue(id)
         this.findNavController().navigate(
-                PlacesFragmentDirections.actionPlacesFragmentToPlaceDetailsFragment()
+            PlacesFragmentDirections.actionPlacesFragmentToPlaceDetailsFragment()
         )
     }
     override fun onRequestPermissionsResult(
@@ -150,20 +163,20 @@ class PlacesFragment : Fragment() {
     /** Location update functions*/
     private fun startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED &&
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    requireContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION
                 ) != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermissions(
-                    requireActivity(), arrayOf(
+                requireActivity(), arrayOf(
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION
-            ),
-                    LOCATION_PERMISSION_REQUEST_CODE
+                ),
+                LOCATION_PERMISSION_REQUEST_CODE
             )
         } else {
             //permission granted
@@ -173,9 +186,10 @@ class PlacesFragment : Fragment() {
                 priority = LocationRequest.PRIORITY_HIGH_ACCURACY
             }
             fusedLocationClient.requestLocationUpdates(
-                    locationRequest,
-                    locationCallback,
-                    Looper.getMainLooper())
+                locationRequest,
+                locationCallback,
+                Looper.getMainLooper()
+            )
 
         }
 
