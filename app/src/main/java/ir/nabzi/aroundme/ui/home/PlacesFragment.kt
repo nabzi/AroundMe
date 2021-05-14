@@ -40,41 +40,16 @@ import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 
 class PlacesFragment : LocationBasedFragment() {
-    val LOCATION_PERMISSION_REQUEST_CODE = 111
+
     private val vmodel: PlaceViewModel by sharedViewModel()
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var mapboxMap: MapboxMap? = null
     private lateinit var adapter: PlaceAdapter
-
-    val onLocationUpdated = { location: Location ->
-        LatLng(location.latitude, location.longitude).run{
-            vmodel.onLocationReceived(this)
-            setCamera(this)
-        }
-    }
-
-    private val locationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult?) {
-            locationResult ?: return
-            for (location in locationResult.locations) {
-                onLocationUpdated(location)
-            }
-        }
-    }
-
-    override fun locationEnabled() {
-        tvGpsStatus.visibility = View.GONE
-    }
-
-    override fun locationDisabled() {
-        tvGpsStatus.visibility = View.VISIBLE
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
         Mapbox.getInstance(requireContext(), MAP_ACCESS_TOKEN)
         return inflater.inflate(R.layout.fragment_places, container, false)
     }
@@ -148,57 +123,22 @@ class PlacesFragment : LocationBasedFragment() {
             PlacesFragmentDirections.actionPlacesFragmentToPlaceDetailsFragment()
         )
     }
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (permissions[0] == Manifest.permission.ACCESS_FINE_LOCATION
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //permission granted
-            }
+
+    override fun onLocationUpdated(location: Location) {
+        LatLng(location.latitude, location.longitude).run{
+            vmodel.onLocationReceived(this)
+            setCamera(this)
         }
     }
-    /** Location update functions*/
-    private fun startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(
-                requireActivity(), arrayOf(
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ),
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
-        } else {
-            //permission granted
-            val locationRequest = LocationRequest().apply {
-                fastestInterval = 5000
-                interval = 10000
-                priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-            }
-            fusedLocationClient.requestLocationUpdates(
-                locationRequest,
-                locationCallback,
-                Looper.getMainLooper()
-            )
 
-        }
 
+    override fun locationEnabled() {
+        tvGpsStatus.visibility = View.GONE
     }
 
-    private fun stopLocationUpdates() {
-        fusedLocationClient.removeLocationUpdates(locationCallback)
+    override fun locationDisabled() {
+        tvGpsStatus.visibility = View.VISIBLE
     }
-
 
 
     /** Map functions */
@@ -239,13 +179,13 @@ class PlacesFragment : LocationBasedFragment() {
     override fun onResume() {
         super.onResume()
         mapView.onResume()
-        startLocationUpdates()
+
     }
 
     override fun onPause() {
         super.onPause()
         mapView.onPause()
-        stopLocationUpdates()
+
     }
 
     override fun onStop() {
