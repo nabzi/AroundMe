@@ -3,26 +3,18 @@ package ir.nabzi.aroundme.ui.home
 import androidx.lifecycle.*
 import com.mapbox.mapboxsdk.geometry.LatLng
 import ir.nabzi.aroundme.data.repository.PlaceRepository
-import ir.nabzi.aroundme.util.DataStoreHelper
-import kotlinx.coroutines.flow.collect
+import ir.nabzi.aroundme.util.SharedPrefHelper
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class PlaceViewModel(private val placeRepository  : PlaceRepository,
-                     private val dataStoreHelper : DataStoreHelper) : ViewModel(){
+                    private val sharedPrefHelper: SharedPrefHelper
+                     ) : ViewModel(){
 
     var  currentLocation : MutableLiveData<LatLng> = MutableLiveData()
     val  selectedPlaceId = MutableLiveData<String>()
     private var  page = 1
     val MIN_LOCATION_CHANGE = 100
-    lateinit var lastLocation : LatLng
-    init{
-        runBlocking {
-            dataStoreHelper.getLastLocation().collect {
-                lastLocation = it
-            }
-        }
-    }
+    var lastLocation : LatLng = sharedPrefHelper.getLastLocation()
     var placeList = currentLocation.switchMap {
             page = 1
             placeRepository.getPlacesNearLocation(it.latitude, it.longitude, viewModelScope, 1 ,
@@ -51,7 +43,7 @@ class PlaceViewModel(private val placeRepository  : PlaceRepository,
         currentLocation.value.let {
             it?.let {
                 viewModelScope.launch {
-                    dataStoreHelper.saveLocation(it)
+                    sharedPrefHelper.saveLocation(it)
                 }
             }
             if ( it == null || (latLng.distanceTo(it) > MIN_LOCATION_CHANGE)) {
